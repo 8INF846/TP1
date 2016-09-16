@@ -26,4 +26,4 @@ AUTHORIZED UQAC STUDENTS
 ------------------------
 
 - Victor Drouin Viallard
-- J'AI PAS TON NOM ;D
+- Sébastien Blin
