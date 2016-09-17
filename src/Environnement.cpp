@@ -2,10 +2,13 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <thread>
+#include <chrono>
 
 Environnement::Environnement(const std::string& filename) {
     //TODO init _vacuum
     initializeMap(filename);
+    start();
 }
 
 void Environnement::initializeMap(const std::string& filename) {
@@ -45,5 +48,8 @@ void Environnement::initializeMap(const std::string& filename) {
 }
 
 void Environnement::start() {
-
+    _threadMap = _map->run();
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100000));
+    }
 }

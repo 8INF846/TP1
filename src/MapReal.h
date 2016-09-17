@@ -3,11 +3,12 @@
 
 #include <ostream>
 #include <vector>
+#include <thread>
+
 #include "Map.h"
 #include "Case.h"
 
 class MapReal : public Map {
-    std::vector<std::vector<Case>> cases;
 public:
     MapReal(int width, int height);
     bool isFloor(int i, int j) const;
@@ -17,6 +18,12 @@ public:
     void setDirtLevel(int i, int j, float dirtLevel);
     void setJewelry(int i, int j, int jewelry);
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
+
+    void update();
+    std::thread run();
+
+private:
+    std::vector<std::vector<Case>> _cases;
 };
 
 #endif
