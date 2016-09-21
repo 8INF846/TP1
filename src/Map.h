@@ -2,6 +2,7 @@
 #define MAP_H
 
 #include "Pos.h"
+#include <math.h>
 
 class Map {
 public:
@@ -11,6 +12,10 @@ public:
     virtual int jewelry(Pos p) const = 0;
     unsigned int width();
     unsigned int height();
+
+    static int getDistBetweenPos(Pos A, Pos B) {
+        return std::abs(A.x - B.x) + std::abs(A.y - B.y);
+    }
 };
 
 #endif

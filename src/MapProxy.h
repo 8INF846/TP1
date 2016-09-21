@@ -9,6 +9,6 @@ class MapProxy : public Map {
     const Map& map;
 public:
     MapProxy(const Vacuum& vacuum, const Map& map);
-}
+};
 
 #endif

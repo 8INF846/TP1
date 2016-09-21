@@ -3,29 +3,28 @@
 
 #include <memory>
 #include <thread>
+#include <vector>
 
 #include "Pos.h"
-#include "Map.h"
+#include "Case.h"
+#include "Strategy.h"
 
 class Vacuum {
-    //std::shared_ptr<Strategy> _strategy;
-    //MapProxy _proxy;
     //Action _currentAction;
 public:
-    Vacuum(Map& map, const Pos pBase);
+    Vacuum(MapReal& map, const Pos pBase);
     //Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase);
     std::thread start();
     void run();
     void stop();
 
 private:
-
     bool _shouldStop;
-    float _score;
-    Pos _currentPos;
-    float _energy;
-    const Pos _pBase;
-    Map& _map;
+    Strategy* _strategy; //Unique_ptr
+
+    //TODO move in another object (Strategy)
+    void updateInternalMap();
+    void chooseAction();
 };
 
 #endif
