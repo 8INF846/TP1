@@ -4,6 +4,15 @@
 #include "MapReal.h"
 #include "Pos.h"
 
+enum Action {
+    IddleAction,
+    SuckDirtAction,
+    SuckJewelAction,
+    MoveRightAction,
+    MoveLeftAction,
+    MoveUpAction,
+    MoveDownAction
+};
 
 class Strategy {
 public:
@@ -21,7 +30,7 @@ protected:
     bool canInspect(Pos p)  {
         return p.x == _currentPos.x && p.y == _currentPos.y;
     }
-    
+
     float _energy;
     const Pos _pBase;
     MapReal& _map;

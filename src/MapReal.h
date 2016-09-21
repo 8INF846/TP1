@@ -17,8 +17,8 @@ public:
     void setIsFloor(Pos p, bool isFloor);
     void setDirtLevel(Pos p, float dirtLevel);
     void setJewelry(Pos p, int jewelry);
-    unsigned int width();
-    unsigned int height();
+    unsigned int width() const;
+    unsigned int height() const;
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
     void update();

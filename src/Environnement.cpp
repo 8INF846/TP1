@@ -6,6 +6,8 @@
 #include <chrono>
 #include "Pos.h"
 
+//TODO SFML?
+
 Environnement::Environnement(const std::string& filename) {
     initializeMap(filename);
     initializeVacuum();
@@ -61,16 +63,17 @@ void Environnement::initializeVacuum() {
     basePos.y = -1;
     auto height = _map->height();
     auto width = _map->width();
-    for(unsigned int h = 0; h < height; ++h) {
-        for(unsigned int w = 0; w < width; ++w) {
+    for(unsigned int h = 0; h <= height; ++h) {
+        for(unsigned int w = 0; w <= width; ++w) {
             Pos position;
             position.x = w;
             position.y = h;
-            if(_map->isFloor(position)) {
-                basePos = position;
-                break;
+            if(_map->isFloor(position) && basePos.x == -1) {
+                basePos.x = position.x;
+                basePos.y = position.y;
             }
         }
+
     }
     _vacuum = new Vacuum(*_map, basePos);
     std::cout << "Vacuum initialized at (" << basePos.x << ";" << basePos.y << ")" << std::endl;

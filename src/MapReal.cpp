@@ -7,6 +7,7 @@
 MapReal::MapReal(unsigned int width, unsigned int height) : _cases(width, std::vector<Case>(height)) {}
 
 bool MapReal::isFloor(Pos p) const {
+    if(p.x < 0 || p.x > width() || p.y < 0 || p.y > height()) return false;
     return _cases[p.y][p.x].isFloor;
 }
 
@@ -30,12 +31,12 @@ void MapReal::setJewelry(Pos p, int jewelry) {
     _cases[p.y][p.x].jewelry = jewelry;
 }
 
-unsigned int MapReal::width() {
-    return _cases.at(0).size();
+unsigned int MapReal::width() const {
+    return _cases.at(0).size() - 1;
 }
 
-unsigned int MapReal::height() {
-    return _cases.size();
+unsigned int MapReal::height() const {
+    return _cases.size() - 1;
 }
 
 void MapReal::update() {
