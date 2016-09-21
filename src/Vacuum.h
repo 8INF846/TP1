@@ -2,22 +2,22 @@
 #define VACUUM_H
 
 #include <memory>
+#include "Pos.h"
 
 class Vacuum {
     std::shared_ptr<Strategy> _strategy;
     float _score;
-    int _i;
-    int _j;
+    Pos _currentPos;
     float _energy;
-    int _iBase;
-    int _jBase;
+    Pos _pBase;
     Map& _map;
     MapProxy _proxy;
     Action _currentAction;
     void run();
     bool _shouldStop;
-public:
-    Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase);
+public
+    Vacuum(std::shared_ptr<Strategy> strategy, Map& map, Pos pBase);:
+    //Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase);
     void start();
 }
 

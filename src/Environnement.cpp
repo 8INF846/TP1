@@ -4,6 +4,7 @@
 #include <fstream>
 #include <thread>
 #include <chrono>
+#include "Pos.h"
 
 Environnement::Environnement(const std::string& filename) {
     //TODO init _vacuum
@@ -40,7 +41,10 @@ void Environnement::initializeMap(const std::string& filename) {
 
     for(unsigned int h = 0; h < height; ++h) {
         for(unsigned int w = 0; w < width; ++w) {
-            _map->setIsFloor(h, w, (isFloorVec[h].size() > w) ? isFloorVec[h][w] : false);
+            Pos position;
+            position.x = w;
+            position.y = h;
+            _map->setIsFloor(position, (isFloorVec[h].size() > w) ? isFloorVec[h][w] : false);
         }
     }
 

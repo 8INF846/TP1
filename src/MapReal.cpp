@@ -6,28 +6,28 @@
 
 MapReal::MapReal(int width, int height) : _cases(width, std::vector<Case>(height)) {}
 
-bool MapReal::isFloor(int i, int j) const {
-    return _cases[i][j].isFloor;
+bool MapReal::isFloor(Pos p) const {
+    return _cases[p.y][p.x].isFloor;
 }
 
-float MapReal::dirtLevel(int i, int j) const {
-    return _cases[i][j].dirtLevel;
+float MapReal::dirtLevel(Pos p) const {
+    return _cases[p.y][p.x].dirtLevel;
 }
 
-int MapReal::jewelry(int i, int j) const {
-    return _cases[i][j].jewelry;
+int MapReal::jewelry(Pos p) const {
+    return _cases[p.y][p.x].jewelry;
 }
 
-void MapReal::setIsFloor(int i, int j, bool isFloor) {
-    _cases[i][j].isFloor = isFloor;
+void MapReal::setIsFloor(Pos p, bool isFloor) {
+    _cases[p.y][p.x].isFloor = isFloor;
 }
 
-void MapReal::setDirtLevel(int i, int j, float dirtLevel) {
-    _cases[i][j].dirtLevel = dirtLevel;
+void MapReal::setDirtLevel(Pos p, float dirtLevel) {
+    _cases[p.y][p.x].dirtLevel = dirtLevel;
 }
 
-void MapReal::setJewelry(int i, int j, int jewelry) {
-    _cases[i][j].jewelry = jewelry;
+void MapReal::setJewelry(Pos p, int jewelry) {
+    _cases[p.y][p.x].jewelry = jewelry;
 }
 
 void MapReal::update() {
@@ -41,13 +41,16 @@ void MapReal::update() {
         auto h = random_height(mt);
         std::uniform_int_distribution<int> random_width(0, _cases[h].size()-1);
         auto w = random_width(mt);
+        Pos currentPos;
+        currentPos.x = w;
+        currentPos.y = h;
         if(random_event(mt) == 1) {
             std::cout << "Add jewel at pos (" << h << ";" << w << ")" << std::endl;
-            setDirtLevel(h, w, _cases[h][w].jewelry + 1);
+            setDirtLevel(currentPos, _cases[h][w].jewelry + 1);
         } else {
             if(_cases[h][w].dirtLevel < 1.0) {
                 std::cout << "Add dirt at pos (" << h << ";" << w << ")" << std::endl;
-                setDirtLevel(h, w, _cases[h][w].dirtLevel + 0.1);
+                setDirtLevel(currentPos, _cases[h][w].dirtLevel + 0.1);
             }
         }
         //Sleep
@@ -64,19 +67,19 @@ std::thread MapReal::run() {
 std::ostream& operator<<(std::ostream& output, const MapReal& mapReal) {
     if(mapReal._cases.size() > 0) {
         output << "┏";
-        for(int i = 0; i < mapReal._cases[0].size(); i++) {
+        for(unsigned int i = 0; i < mapReal._cases[0].size(); i++) {
             output << "━";
         }
         output << "┓" << std::endl;
-        for(int i = 0; i < mapReal._cases.size(); i++) {
+        for(unsigned int i = 0; i < mapReal._cases.size(); i++) {
             output << "┃";
-            for(int j = 0; j < mapReal._cases[i].size(); j++) {
+            for(unsigned int j = 0; j < mapReal._cases[i].size(); j++) {
                 output << (mapReal._cases[i][j].isFloor ? " " : "▓");
             }
             output << "┃" << std::endl;
         }
         output << "┗";
-        for(int i = 0; i < mapReal._cases[0].size(); i++) {
+        for(unsigned int i = 0; i < mapReal._cases[0].size(); i++) {
             output << "━";
         }
         output << "┛" << std::endl;

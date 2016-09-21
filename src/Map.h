@@ -1,12 +1,14 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "Pos.h"
+
 class Map {
 public:
     // GETTERS
-    virtual bool isFloor(int i, int j) const = 0;
-    virtual float dirtLevel(int i, int j) const = 0;
-    virtual int jewelry(int i, int j) const = 0;
+    virtual bool isFloor(Pos p) const = 0;
+    virtual float dirtLevel(Pos p) const = 0;
+    virtual int jewelry(Pos p) const = 0;
 };
 
 #endif

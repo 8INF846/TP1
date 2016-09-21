@@ -11,12 +11,12 @@
 class MapReal : public Map {
 public:
     MapReal(int width, int height);
-    bool isFloor(int i, int j) const;
-    float dirtLevel(int i, int j) const;
-    int jewelry(int i, int j) const;
-    void setIsFloor(int i, int j, bool isFloor);
-    void setDirtLevel(int i, int j, float dirtLevel);
-    void setJewelry(int i, int j, int jewelry);
+    bool isFloor(Pos p) const;
+    float dirtLevel(Pos p) const;
+    int jewelry(Pos p) const;
+    void setIsFloor(Pos p, bool isFloor);
+    void setDirtLevel(Pos p, float dirtLevel);
+    void setJewelry(Pos p, int jewelry);
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
     void update();
