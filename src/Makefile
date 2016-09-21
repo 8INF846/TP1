@@ -1,6 +1,6 @@
 CC := g++
-CPP_FILES := main.cpp MapReal.cpp Environnement.cpp
-H_FILES := Map.h MapReal.h Environnement.h Pos.h
+CPP_FILES := main.cpp MapReal.cpp Environnement.cpp Vacuum.cpp
+H_FILES := Map.h MapReal.h Environnement.h Pos.h Vacuum.h
 LD_FLAGS :=
 #Make difference between x86 and arm
 ifeq ($(shell uname -m), armv7l)

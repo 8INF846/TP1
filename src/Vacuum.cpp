@@ -1,17 +1,16 @@
-#include <thread>
 #include <chrono>
+#include <iostream>
 #include "Vacuum.h"
 
-Vacuum::Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase) :
-        _strategy(strategy), _map(map), _i(iBase), _j(jBase), _energy(100), _iBase(iBase), _jBase(jBase) {
-    if(!map.isFloor(iBase, jBase)) {
+Vacuum::Vacuum(Map& map, Pos pBase) : _currentPos(pBase), _energy(100), _pBase(pBase), _map(map)  {
+    if(!map.isFloor(pBase)) {
         throw "Position de base invalide.";
     }
 }
 
-void Vacuum::start() {
+std::thread Vacuum::start() {
     _shouldStop = false;
-    std::thread t(&Vacuum::run, this);
+    return std::thread(&Vacuum::run, this);
 }
 
 void Vacuum::stop() {
@@ -19,7 +18,12 @@ void Vacuum::stop() {
 }
 
 void Vacuum::run() {
-    auto startTime = std::chrono::system_clock::now();
+    while(!_shouldStop) {
+        std::cout << "thread vacuum" << std::endl;
+        auto delay = std::chrono::milliseconds(1000);
+        std::this_thread::sleep_for(delay);
+    }
+    /*auto startTime = std::chrono::system_clock::now();
     auto endTime = std::chrono::system_clock::now();
     std::chrono::duration<double> frameDuration;
     double frameTime;
@@ -29,12 +33,5 @@ void Vacuum::run() {
         frameDuration = endTime - startTime;
         startTime = endTime;
         frameTime = endTime.count();
-
-        if(!_curentAction.isOver()) {
-            _currentAction.execute(frameTime);
-        }
-        else {
-            _currentAction = _strategy.execute(_proxy);
-        }
-    }
+    }*/
 }

@@ -2,23 +2,30 @@
 #define VACUUM_H
 
 #include <memory>
+#include <thread>
+
 #include "Pos.h"
+#include "Map.h"
 
 class Vacuum {
-    std::shared_ptr<Strategy> _strategy;
+    //std::shared_ptr<Strategy> _strategy;
+    //MapProxy _proxy;
+    //Action _currentAction;
+public:
+    Vacuum(Map& map, const Pos pBase);
+    //Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase);
+    std::thread start();
+    void run();
+    void stop();
+
+private:
+
+    bool _shouldStop;
     float _score;
     Pos _currentPos;
     float _energy;
-    Pos _pBase;
+    const Pos _pBase;
     Map& _map;
-    MapProxy _proxy;
-    Action _currentAction;
-    void run();
-    bool _shouldStop;
-public
-    Vacuum(std::shared_ptr<Strategy> strategy, Map& map, Pos pBase);:
-    //Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase);
-    void start();
-}
+};
 
 #endif

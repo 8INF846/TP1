@@ -10,13 +10,15 @@
 
 class MapReal : public Map {
 public:
-    MapReal(int width, int height);
+    MapReal(unsigned int width, unsigned int height);
     bool isFloor(Pos p) const;
     float dirtLevel(Pos p) const;
     int jewelry(Pos p) const;
     void setIsFloor(Pos p, bool isFloor);
     void setDirtLevel(Pos p, float dirtLevel);
     void setJewelry(Pos p, int jewelry);
+    unsigned int width();
+    unsigned int height();
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
     void update();

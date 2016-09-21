@@ -4,7 +4,7 @@
 #include <chrono>
 #include <random>
 
-MapReal::MapReal(int width, int height) : _cases(width, std::vector<Case>(height)) {}
+MapReal::MapReal(unsigned int width, unsigned int height) : _cases(width, std::vector<Case>(height)) {}
 
 bool MapReal::isFloor(Pos p) const {
     return _cases[p.y][p.x].isFloor;
@@ -28,6 +28,14 @@ void MapReal::setDirtLevel(Pos p, float dirtLevel) {
 
 void MapReal::setJewelry(Pos p, int jewelry) {
     _cases[p.y][p.x].jewelry = jewelry;
+}
+
+unsigned int MapReal::width() {
+    return _cases.at(0).size();
+}
+
+unsigned int MapReal::height() {
+    return _cases.size();
 }
 
 void MapReal::update() {

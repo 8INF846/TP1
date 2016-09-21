@@ -7,8 +7,8 @@
 #include "Pos.h"
 
 Environnement::Environnement(const std::string& filename) {
-    //TODO init _vacuum
     initializeMap(filename);
+    initializeVacuum();
     start();
 }
 
@@ -51,8 +51,35 @@ void Environnement::initializeMap(const std::string& filename) {
     std::cout << *_map;
 }
 
+void Environnement::initializeVacuum() {
+    if(_map == nullptr) {
+        throw "Can't initialize Vacuum without map";
+    }
+    //Find first floor case
+    Pos basePos;
+    basePos.x = -1;
+    basePos.y = -1;
+    auto height = _map->height();
+    auto width = _map->width();
+    for(unsigned int h = 0; h < height; ++h) {
+        for(unsigned int w = 0; w < width; ++w) {
+            Pos position;
+            position.x = w;
+            position.y = h;
+            if(_map->isFloor(position)) {
+                basePos = position;
+                break;
+            }
+        }
+    }
+    _vacuum = new Vacuum(*_map, basePos);
+    std::cout << "Vacuum initialized at (" << basePos.x << ";" << basePos.y << ")" << std::endl;
+}
+
 void Environnement::start() {
+    //TODO same method
     _threadMap = _map->run();
+    _threadVacuum = _vacuum->start();
     while(true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100000));
     }
