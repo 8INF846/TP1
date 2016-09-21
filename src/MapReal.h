@@ -22,7 +22,7 @@ public:
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
     void update();
-    std::thread run();
+    std::thread start();
 
 private:
     std::vector<std::vector<Case>> _cases;

@@ -77,8 +77,7 @@ void Environnement::initializeVacuum() {
 }
 
 void Environnement::start() {
-    //TODO same method
-    _threadMap = _map->run();
+    _threadMap = _map->start();
     _threadVacuum = _vacuum->start();
     while(true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100000));

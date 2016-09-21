@@ -68,7 +68,7 @@ void MapReal::update() {
     }
 }
 
-std::thread MapReal::run() {
+std::thread MapReal::start() {
     return std::thread(&MapReal::update, this);
 }
 
