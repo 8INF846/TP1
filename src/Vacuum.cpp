@@ -1,39 +1,94 @@
+#include <thread>
 #include <chrono>
 #include <iostream>
+
 #include "Vacuum.h"
-#include "SuckWithLevelStrategy.h"
+#include "Sensor.h"
 
-Vacuum::Vacuum(MapReal& map, Pos pBase) {
-    _strategy = new SuckWithLevelStrategy(map, pBase);
+/* Public constructors */
+Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition) :
+        m_strategy(std::move(strategy)) m_position(basePosition),
+        m_basePosition(basePosition) {
+    m_strategy->reset();
 }
 
-std::thread Vacuum::start() {
-    _shouldStop = false;
-    return std::thread(&Vacuum::run, this);
+/* Public methods */
+bool Vacuum::isBusy() {
+    return m_currentAction.timer > 0;
 }
 
-void Vacuum::stop() {
-    _shouldStop = true;
+/* Private methods */
+Sensor Vacuum::observe() {
+    Sensors sensors;
+
+    // North
+    Pos position = m_position;
+    position.y -= 1;
+    sensors.north = m_map->isFloor(position);
+    // South
+    position.y += 2;
+    sensors.south = m_map->isFloor(position);
+    // Est
+    position.y -= 1;
+    position.x += 1;
+    sensors.est = m_map->isFloor(position);
+    // West
+    position.x -= 2;
+    sensors.west = m_map->isFloor(position);
+    // Dirt
+    position.x += 1;
+    sensors.dirt = m_map->dirtLevel(position);
+    // Jewelry
+    sensors.jewelry = m_map->jewelry(position);
+    // Battery
+    sensors.battery = m_dBattery;
+    // Charging
+    sensors.charging = m_position == m_basePosition;
+
+    return sensors;
 }
 
-void Vacuum::run() {
-    while(!_shouldStop) {
-        std::cout << "thread vacuum" << std::endl;
-        _strategy->observeAndUpdate();
-        _strategy->pickAndExecAction();
-        //TODO remove
-        auto delay = std::chrono::milliseconds(1000);
-        std::this_thread::sleep_for(delay);
+void Vacuum::findNextAction(const Sensors& sensors) {
+    m_currentAction = m_strategy->findNextAction(sensors);
+}
+
+void Vacuum::executeCurrentAction(double delta) {
+    m_currentAction.timer -= delta;
+
+    if(m_currentAction.timer <= 0) {
+        switch(m_currentAction.type) {
+            case GoNorth:
+                m_position.y -= 1;
+                break;
+            case GoSouth:
+                m_position.y += 1;
+                break;
+            case GoEst:
+                m_position.x += 1;
+                break;
+            case GoWest:
+                m_position.x -= 1;
+                break;
+            case Gather:
+                m_map.gatherJewelry(m_position);
+                break;
+            default:
+                break;
+        }
+        m_currentAction.type = Iddle;
     }
-    /*auto startTime = std::chrono::system_clock::now();
-    auto endTime = std::chrono::system_clock::now();
-    std::chrono::duration<double> frameDuration;
-    double frameTime;
+    if(m_currentAction.type == Suck) {
+        m_map.suckDirt(position, delta);
+    }
+}
 
-    while(!_shouldStop) {
-    endTime = std::chrono::system_clock::now();
-    frameDuration = endTime - startTime;
-    startTime = endTime;
-    frameTime = endTime.count();
-}*/
+void Vacuum::update(double delta) {
+    // Récupérer les données des capteurs
+    Sensors sensors = observe();
+
+    // Executer une action
+    if(!isBusy()) {
+        findNextAction(sensors);
+    }
+    executeCurrentAction(delta);
 }

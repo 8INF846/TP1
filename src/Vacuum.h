@@ -2,29 +2,37 @@
 #define VACUUM_H
 
 #include <memory>
-#include <thread>
 #include <vector>
 
+#include "Startable.h"
 #include "Pos.h"
-#include "Case.h"
 #include "Strategy.h"
+#include "Action.h"
+#include "Map.h"
+#include "Sensors.h"
 
-class Vacuum {
-    //Action _currentAction;
+class Vacuum : public Startable {
 public:
-    Vacuum(MapReal& map, const Pos pBase);
-    //Vacuum(std::shared_ptr<Strategy> strategy, Map& map, int iBase, int jBase);
-    std::thread start();
-    void run();
-    void stop();
+    /* Constructors */
+    Vacuum<Strategy>(Pos basePosition);
+
+    /* Methods */
+    bool isBusy();
 
 private:
-    bool _shouldStop;
-    Strategy* _strategy; //Unique_ptr
+    /* Methods */
+    void update(double delta);
+    Sensors observe() const;
+    void findNextAction(const Sensors& sensors);
+    void executeCurrentAction(double delta);
 
-    //TODO move in another object (Strategy)
-    void updateInternalMap();
-    void chooseAction();
+    /* Attributes */
+    Pos m_position;
+    Pos m_basePosition;
+    bool m_bShouldStop;
+    std::unique_ptr<Strategy> m_strategy;
+    Action m_currentAction;
+    std::unique_ptr<Map> m_map;
 };
 
 #endif
