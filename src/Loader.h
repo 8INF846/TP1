@@ -3,12 +3,12 @@
 
 #include <string>
 
-#include "Map.h"
+#include "MapReal.h"
 #include "Vacuum.h"
 
 class Environment {
 public:
-    static Map loadMap(const std::string& filename);
+    static MapReal loadMap(const std::string& filename);
     static Vacuum loadVacuum(const std::string& filename);
 };
 

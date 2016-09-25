@@ -4,7 +4,7 @@
 enum ActionType {
     GoNorth,
     GoSouth,
-    GoEst,
+    GoEast,
     GoWest,
     Suck,
     Gather,
@@ -12,8 +12,8 @@ enum ActionType {
 };
 
 struct Action {
-    ActionType type = iddle;
+    ActionType type = Iddle;
     double timer = 0;
-}
+};
 
 #endif

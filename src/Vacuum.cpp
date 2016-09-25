@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "Vacuum.h"
-#include "Sensor.h"
+#include "Sensors.h"
 
 /* Public constructors */
 Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition) :
@@ -18,7 +18,7 @@ bool Vacuum::isBusy() {
 }
 
 /* Private methods */
-Sensor Vacuum::observe() {
+Sensors Vacuum::observe() const {
     Sensors sensors;
 
     // North
@@ -63,7 +63,7 @@ void Vacuum::executeCurrentAction(double delta) {
             case GoSouth:
                 m_position.y += 1;
                 break;
-            case GoEst:
+            case GoEast:
                 m_position.x += 1;
                 break;
             case GoWest:

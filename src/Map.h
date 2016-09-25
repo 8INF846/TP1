@@ -3,17 +3,19 @@
 
 #include "Startable.h"
 #include "Pos.h"
+#include "Case.h"
 #include <math.h>
+#include <vector>
 
 class Map : public Startable {
 public:
     /* Constructors */
-    MapReal(unsigned int width, unsigned int height);
+    Map(unsigned int width, unsigned int height);
 
     /* Methods */
-    bool isFloor(Pos p) const = 0;
-    float dirtLevel(Pos p) const = 0;
-    int jewelry(Pos p) const = 0;
+    virtual bool isFloor(Pos p) const = 0;
+    virtual float dirtLevel(Pos p) const = 0;
+    virtual int jewelry(Pos p) const = 0;
     unsigned int width() const;
     unsigned int height() const;
     void gatherJewelry(Pos p);

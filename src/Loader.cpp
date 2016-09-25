@@ -5,7 +5,7 @@
 #include "Loader.h"
 #include "Pos.h"
 
-static Map Loader::loadMap(const std::string& filemane) {
+static MapReal Loader::loadMap(const std::string& filemane) {
     // Lire le fichier
     std::vector<std::vector<bool>> floor;
     unsigned int width;
@@ -29,7 +29,7 @@ static Map Loader::loadMap(const std::string& filemane) {
     unsigned int height = floor.size();
 
     // Créer la map
-    Map map(height, width);
+    MapReal map(height, width);
     for(unsigned int i = 0; i < height; i++) {
         for(unsigned int j = 0; j < width; j++) {
             if(floor[i].size() > j) {

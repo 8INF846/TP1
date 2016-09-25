@@ -12,6 +12,6 @@ private:
     bool m_bShouldStop = false;
     void run();
     virtual void update(double delta) = 0;
-}
+};
 
 #endif

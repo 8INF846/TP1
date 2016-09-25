@@ -10,6 +10,6 @@ struct Sensors {
     int jewelry;
     double battery;
     bool charging;
-}
+};
 
 #endif

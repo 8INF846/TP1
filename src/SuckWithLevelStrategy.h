@@ -2,6 +2,7 @@
 #define SUCKWITHLEVELSTRATEGY_H
 
 #include "Strategy.h"
+#include "Action.h"
 
 class SuckWithLevelStrategy : public Strategy {
 public:

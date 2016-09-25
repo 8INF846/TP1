@@ -62,44 +62,44 @@ void SuckWithLevelStrategy::pickAndExecAction() {
     Action chosenAction = pickAction();
     //Execute Action
     //TODO when execute = real score + time management and protect map to multithread changes
-    if(chosenAction == IddleAction) {
+    if(chosenAction.type == Iddle) {
         std::cout << "[Vacuum] IDDLE(" << _currentPos.x << ";" << _currentPos.y << ")" << std::endl;
         if(_pBase.x == _currentPos.x && _pBase.y == _currentPos.y) {
             std::cout << "[Vacuum] is fully charged" << std::endl;
             _energy = 100;
         }
     }
-    if(chosenAction == SuckDirtAction) {
-        std::cout << "[Vacuum] SUCKDIRT(" << _currentPos.x << ";" << _currentPos.y << "); "
+    if(chosenAction.type == Suck) {
+        std::cout << "[Vacuum] Suck(" << _currentPos.x << ";" << _currentPos.y << "); "
         << "D:" << _map.dirtLevel(_currentPos)
         << "J:" << _map.jewelry(_currentPos)
         << std::endl;
         _map.setDirtLevel(_currentPos, 0);
         _map.setJewelry(_currentPos, 0);
     }
-    if(chosenAction == SuckJewelAction) {
-        std::cout << "[Vacuum] SUCKJEWEL(" << _currentPos.x << ";" << _currentPos.y << "); "
+    if(chosenAction.type == Gather) {
+        std::cout << "[Vacuum] Gather(" << _currentPos.x << ";" << _currentPos.y << "); "
         << "D:" << _map.dirtLevel(_currentPos)
         << "J:" << _map.jewelry(_currentPos)
         << std::endl;
         _map.setJewelry(_currentPos, 0);
     }
-    if(chosenAction == MoveUpAction) {
+    if(chosenAction.type == GoNorth) {
         _energy -= 1.0;
         _currentPos.y -= 1;
         std::cout << "[Vacuum] MOVE(" << _currentPos.x << ";" << _currentPos.y << "); " << std::endl;
     }
-    if(chosenAction == MoveDownAction) {
+    if(chosenAction.type == GoSouth) {
         _energy -= 1.0;
         _currentPos.y += 1;
         std::cout << "[Vacuum] MOVE(" << _currentPos.x << ";" << _currentPos.y << "); " << std::endl;
     }
-    if(chosenAction == MoveLeftAction) {
+    if(chosenAction.type == GoWest) {
         _energy -= 1.0;
         _currentPos.x -= 1;
         std::cout << "[Vacuum] MOVE(" << _currentPos.x << ";" << _currentPos.y << "); " << std::endl;
     }
-    if(chosenAction == MoveRightAction) {
+    if(chosenAction.type == GoEast) {
         _energy -= 1.0;
         _currentPos.x += 1;
         std::cout << "[Vacuum] MOVE(" << _currentPos.x << ";" << _currentPos.y << "); " << std::endl;
@@ -133,7 +133,8 @@ float SuckWithLevelStrategy::getScoreMove(Pos p) {
 Action SuckWithLevelStrategy::pickAction() {
     //Evaluate score if do action
     //TODO change score evaluation with tests ;)
-    auto chosenAction = IddleAction;
+    Action chosenAction;
+    chosenAction.type  = Iddle;
     auto x = _currentPos.x;
     auto y = _currentPos.y;
     //1. Iddle
@@ -143,17 +144,17 @@ Action SuckWithLevelStrategy::pickAction() {
     }
     auto currentScore = scoreIddle;
     std::cout << "iddle:" << scoreIddle << std::endl;
-    //2. SuckDirt
-    auto scoreSuckDirt = -1.0; //We loose 1% of energy
-    scoreSuckDirt += 10*_internalMap[y][x].dirtLevel;
-    scoreSuckDirt -= 100*_internalMap[y][x].jewelry;
-    if(scoreSuckDirt > currentScore) chosenAction = SuckDirtAction;
-    std::cout << "dirt:" << scoreSuckDirt << std::endl;
-    //3. SuckJewel
-    auto scoreSuckJewel = -1.0; //We loose 1% of energy
-    scoreSuckJewel += 10*_internalMap[y][x].jewelry;
-    if(scoreSuckJewel > currentScore) chosenAction = SuckJewelAction;
-    std::cout << "jewel:" << scoreSuckJewel << std::endl;
+    //2. Suck
+    auto scoreSuck = -1.0; //We loose 1% of energy
+    scoreSuck += 10*_internalMap[y][x].dirtLevel;
+    scoreSuck -= 100*_internalMap[y][x].jewelry;
+    if(scoreSuck > currentScore) chosenAction.type = Suck;
+    std::cout << "dirt:" << scoreSuck << std::endl;
+    //3. Gather
+    auto scoreGather = -1.0; //We loose 1% of energy
+    scoreGather += 10*_internalMap[y][x].jewelry;
+    if(scoreGather > currentScore) chosenAction.type = Gather;
+    std::cout << "jewel:" << scoreGather << std::endl;
     //4. TODO move (prévision 1 case)
     //UP
     Pos up;
@@ -161,7 +162,7 @@ Action SuckWithLevelStrategy::pickAction() {
     up.y = y-1;
     if(_map.isFloor(up)) {
         auto scoreUp = getScoreMove(up);
-        if(scoreUp > currentScore) chosenAction = MoveUpAction;
+        if(scoreUp > currentScore) chosenAction.type = GoNorth;
         std::cout << "Up:" << scoreUp << std::endl;
     }
     //DOWN
@@ -170,7 +171,7 @@ Action SuckWithLevelStrategy::pickAction() {
     down.y = y+1;
     if(_map.isFloor(down)) {
         auto scoreDown = getScoreMove(down);
-        if(scoreDown > currentScore) chosenAction = MoveDownAction;
+        if(scoreDown > currentScore) chosenAction.type = GoSouth;
         std::cout << "Down:" << scoreDown << std::endl;
     }
     //LEFT
@@ -179,7 +180,7 @@ Action SuckWithLevelStrategy::pickAction() {
     left.y = y;
     if(_map.isFloor(left)) {
         auto scoreLeft = getScoreMove(left);
-        if(scoreLeft > currentScore) chosenAction = MoveLeftAction;
+        if(scoreLeft > currentScore) chosenAction.type = GoWest;
         std::cout << "Left:" << scoreLeft << std::endl;
     }
     //RIGHT
@@ -188,7 +189,7 @@ Action SuckWithLevelStrategy::pickAction() {
     right.y = y;
     if(_map.isFloor(right)) {
         auto scoreRight = getScoreMove(right);
-        if(scoreRight > currentScore) chosenAction = MoveRightAction;
+        if(scoreRight > currentScore) chosenAction.type = GoEast;
         std::cout << "Right:" << scoreRight << std::endl;
     }
 
