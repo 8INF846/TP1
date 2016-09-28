@@ -2,7 +2,21 @@
 
 #include <iostream>
 
-SuckWithLevelStrategy::SuckWithLevelStrategy(MapReal& map, const Pos pBase) : Strategy(map, pBase) {
+SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
+    _energy = 100.;
+}
+
+void SuckWithLevelStrategy::reset() {
+
+}
+
+Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
+{
+    Action finalAction;
+    return finalAction;
+}
+
+/*SuckWithLevelStrategy::SuckWithLevelStrategy(MapReal& map, const Pos pBase) : Strategy(map, pBase) {
     initializeInternalMap();
     _suckLevel = 0.2;
 }
@@ -195,3 +209,8 @@ Action SuckWithLevelStrategy::pickAction() {
 
     return chosenAction;
 }
+
+void SuckWithLevelStrategy::reset() {
+
+}
+*/

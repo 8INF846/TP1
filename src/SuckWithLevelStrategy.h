@@ -6,12 +6,12 @@
 
 class SuckWithLevelStrategy : public Strategy {
 public:
-    SuckWithLevelStrategy(MapReal& map, const Pos pBase);
-    void observeAndUpdate();
-    void pickAndExecAction();
+    SuckWithLevelStrategy();
+    void reset();
+    Action findNextAction(const Sensors& sensors);
 
 private:
-    void initializeInternalMap();
+    /*void initializeInternalMap();
     Action pickAction();
     float getScoreMove(Pos p);
 
@@ -20,7 +20,7 @@ private:
     float _suckLevel;
     float _lowBattery;
     std::vector<std::vector<Case>> _internalMap;
-    float _score;
+    float _score;*/
 };
 
 #endif

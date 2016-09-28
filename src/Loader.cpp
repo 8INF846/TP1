@@ -1,14 +1,17 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <iostream>
+#include <exception>
 
 #include "Loader.h"
 #include "Pos.h"
+#include "SuckWithLevelStrategy.h"
 
-static MapReal Loader::loadMap(const std::string& filemane) {
+MapReal Loader::loadMap(const std::string& filename) {
     // Lire le fichier
     std::vector<std::vector<bool>> floor;
-    unsigned int width;
+    size_t width = 0;
     std::ifstream file(filename, std::ios::app);
     if(!file.is_open()) {
         throw "Can't open file";
@@ -29,23 +32,27 @@ static MapReal Loader::loadMap(const std::string& filemane) {
     unsigned int height = floor.size();
 
     // Créer la map
-    MapReal map(height, width);
-    for(unsigned int i = 0; i < height; i++) {
-        for(unsigned int j = 0; j < width; j++) {
-            if(floor[i].size() > j) {
+    MapReal map(width, height);
+    for(unsigned int h = 0; h < height; h++) {
+        for(unsigned int w = 0; w < width; w++) {
+            if(floor[h].size() > w) {
                 Pos position;
-                position.x = i;
-                position.y = j;
-                map.setIsFloor(position, floor[i][j]);
+                position.x = w;
+                position.y = h;
+                try {
+                    map.setIsFloor(position, floor[h][w]);
+                } catch(const std::string & e) {
+                    continue;
+                }
             }
         }
     }
     return map;
 }
 
-static Vacuum Loader::loadVacuum(const std::string& filename) {
+Vacuum Loader::loadVacuum(const std::string& filename) {
     // Lire le fichier
-    std::ifstream file(filename, std::ios::app);
+    /*std::ifstream file(filename, std::ios::app);
     if(!file.is_open()) {
         throw "Can't open file";
     }
@@ -54,9 +61,9 @@ static Vacuum Loader::loadVacuum(const std::string& filename) {
     // Lire la stratégie
     if(!std::getline(file, line)) {
         throw "Missing strategy name";
-    }
-    std::unique_ptr<Strategy> strategy;
-    if(line.compare("SuckWithLevel")) {
+    }*/
+    std::unique_ptr<Strategy> strategy = std::make_unique<SuckWithLevelStrategy>();
+    /*if(line.compare("SuckWithLevel")) {
         strategy = std::make_unique<SuckWithLevelStrategy>();
     }
     else {
@@ -66,11 +73,11 @@ static Vacuum Loader::loadVacuum(const std::string& filename) {
     // Lire la position
     if(!std::getline(file, line)) {
         throw "Missing base position";
-    }
+    }*/
     Pos basePosition;
-    std::size_t space;
-    basePosition.x = std::stoi(line, &space);
-    basePosition.y = std::stoi(line.substr(space));
+    //std::size_t space;
+    basePosition.x = 0;//std::stoi(line, &space);
+    basePosition.y = 0;//std::stoi(line.substr(space));
 
     return Vacuum(strategy, basePosition);
 }

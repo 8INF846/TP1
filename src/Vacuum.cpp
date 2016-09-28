@@ -7,8 +7,10 @@
 
 /* Public constructors */
 Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition) :
-        m_strategy(std::move(strategy)) m_position(basePosition),
-        m_basePosition(basePosition) {
+    m_dBattery(100.),
+    m_position(basePosition),
+    m_basePosition(basePosition),
+    m_strategy(std::move(strategy))  {
     m_strategy->reset();
 }
 
@@ -70,7 +72,7 @@ void Vacuum::executeCurrentAction(double delta) {
                 m_position.x -= 1;
                 break;
             case Gather:
-                m_map.gatherJewelry(m_position);
+                m_map->gatherJewelry(m_position);
                 break;
             default:
                 break;
@@ -78,7 +80,7 @@ void Vacuum::executeCurrentAction(double delta) {
         m_currentAction.type = Iddle;
     }
     if(m_currentAction.type == Suck) {
-        m_map.suckDirt(position, delta);
+        m_map->suckDirt(m_position, delta);
     }
 }
 

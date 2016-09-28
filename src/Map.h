@@ -9,24 +9,16 @@
 
 class Map : public Startable {
 public:
-    /* Constructors */
-    Map(unsigned int width, unsigned int height);
-
     /* Methods */
     virtual bool isFloor(Pos p) const = 0;
     virtual float dirtLevel(Pos p) const = 0;
     virtual int jewelry(Pos p) const = 0;
-    unsigned int width() const;
-    unsigned int height() const;
-    void gatherJewelry(Pos p);
-    void suckDirt(Pos p, double delta);
-    friend std::ostream& operator<<(std::ostream& output, const Map& map);
-
-private:
-    /* Methods */
-    void update();
-
-    std::vector<std::vector<Case>> m_cases;
+    virtual unsigned int width() const = 0;
+    virtual unsigned int height() const = 0;
+    virtual void setIsFloor(Pos p, bool isFloor) = 0;
+    virtual void gatherJewelry(Pos p) = 0;
+    virtual void suckDirt(Pos p, double delta) = 0;
+    virtual void update(double delta = 0) = 0;
 };
 
 #endif

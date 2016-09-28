@@ -20,13 +20,15 @@ public:
     void setJewelry(Pos p, int jewelry);
     unsigned int width() const;
     unsigned int height() const;
+    void gatherJewelry(Pos p);
+    void suckDirt(Pos p, double delta);
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
-    void update();
+    void update(double delta);
     std::thread start();
 
 private:
-    std::vector<std::vector<Case>> _cases;
+    std::vector<std::vector<Case>> m_cases;
 };
 
 #endif

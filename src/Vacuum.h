@@ -11,10 +11,11 @@
 #include "Map.h"
 #include "Sensors.h"
 
+
 class Vacuum : public Startable {
 public:
     /* Constructors */
-    Vacuum<Strategy>(Pos basePosition);
+    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition);
 
     /* Methods */
     bool isBusy();
@@ -27,6 +28,7 @@ private:
     void executeCurrentAction(double delta);
 
     /* Attributes */
+    double m_dBattery;
     Pos m_position;
     Pos m_basePosition;
     bool m_bShouldStop;
