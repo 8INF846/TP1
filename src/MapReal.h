@@ -10,7 +10,7 @@
 
 class MapReal : public Map {
 public:
-    MapReal();
+    MapReal() {};
     MapReal(unsigned int width, unsigned int height);
     bool isFloor(Pos p) const;
     float dirtLevel(Pos p) const;

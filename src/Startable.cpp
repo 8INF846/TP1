@@ -24,7 +24,6 @@ void Startable::run() {
         delta = deltaDuration.count();
         startTime = endTime;
 
-        std::cout << "Startable" << std::endl;
         update(delta);
     }
 }

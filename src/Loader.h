@@ -9,7 +9,7 @@
 class Loader {
 public:
     static MapReal loadMap(const std::string& filename);
-    static Vacuum loadVacuum(const std::string& filename);
+    static Vacuum loadVacuum(const std::string& filename, MapReal& map);
 };
 
 

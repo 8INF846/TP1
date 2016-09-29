@@ -3,6 +3,8 @@
 #include <string>
 #include <iostream>
 #include <exception>
+#include <regex>
+#include <algorithm>
 
 #include "Loader.h"
 #include "Pos.h"
@@ -14,7 +16,7 @@ MapReal Loader::loadMap(const std::string& filename) {
     size_t width = 0;
     std::ifstream file(filename, std::ios::app);
     if(!file.is_open()) {
-        throw "Can't open file";
+        throw std::string("Can't open file");
     }
     std::string line;
     while(std::getline(file, line)) {
@@ -50,34 +52,62 @@ MapReal Loader::loadMap(const std::string& filename) {
     return map;
 }
 
-Vacuum Loader::loadVacuum(const std::string& filename) {
-    // Lire le fichier
-    /*std::ifstream file(filename, std::ios::app);
+Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
+    std::ifstream file(filename);
     if(!file.is_open()) {
-        throw "Can't open file";
+        throw std::string("Can't open file");
     }
     std::string line;
+    std::string name;
 
-    // Lire la stratégie
-    if(!std::getline(file, line)) {
-        throw "Missing strategy name";
-    }*/
-    std::unique_ptr<Strategy> strategy = std::make_unique<SuckWithLevelStrategy>();
-    /*if(line.compare("SuckWithLevel")) {
-        strategy = std::make_unique<SuckWithLevelStrategy>();
+    std::unique_ptr<Strategy> strategy;
+    Pos basePos;
+    basePos.x = -1;
+    basePos.y = -1;
+    while (std::getline(file, line))
+    {
+        const std::string s = line;
+        if(s.size() > 0 && s[0] != '#') {
+            const std::regex parameter("(.+)=(.*)");
+            std::smatch match;
+            std::smatch micmatch;
+
+            if (std::regex_search(s.begin(), s.end(), match, parameter))
+            {
+                std::string param = std::string(match[1]);
+                std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                std::string value = std::string(match[2]);
+                std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+                if(param == "strategy") {
+                    if(value != "suckwithlevel") {
+                        throw std::string("Can't choose unknown strategy: " + value);
+                    } else {
+                        strategy = std::make_unique<SuckWithLevelStrategy>();
+                    }
+                } else if (param == "pos") {
+                    std::string pos = value;
+                    std::string current;
+                    for(size_t c = 0; c < pos.size(); ++c) {
+                        if(pos[c] == '|' || (c+1 == pos.size())) {
+                            if(c+1 == pos.size()) current += pos[c];
+                            basePos.y = std::stoi(current);
+                        }
+                        else if(pos[c] == ';') {
+                            basePos.x = std::stoi(current);
+                            current = "";
+                        } else {
+                            current += pos[c];
+                        }
+                    }
+                    try {
+                        map.isFloor(basePos);
+                    } catch(const std::string & e) {
+                        throw std::string("Can't set basePos for Vacuum");
+                    }
+                }
+            }
+        }
     }
-    else {
-        throw "Unknown strategy name";
-    }
 
-    // Lire la position
-    if(!std::getline(file, line)) {
-        throw "Missing base position";
-    }*/
-    Pos basePosition;
-    //std::size_t space;
-    basePosition.x = 0;//std::stoi(line, &space);
-    basePosition.y = 0;//std::stoi(line.substr(space));
-
-    return Vacuum(strategy, basePosition);
+    return Vacuum(strategy, basePos);
 }

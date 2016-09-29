@@ -86,11 +86,16 @@ void Vacuum::executeCurrentAction(double delta) {
 
 void Vacuum::update(double delta) {
     // Récupérer les données des capteurs
-    Sensors sensors = observe();
+
+    auto delay = std::chrono::milliseconds(1000);
+    std::cout << "[Vacuum]sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
+    std::this_thread::sleep_for(delay);
+
+    /*TODO Sensors sensors = observe();
 
     // Executer une action
     if(!isBusy()) {
         findNextAction(sensors);
     }
-    executeCurrentAction(delta);
+    executeCurrentAction(delta);*/
 }

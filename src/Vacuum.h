@@ -15,6 +15,7 @@
 class Vacuum : public Startable {
 public:
     /* Constructors */
+    Vacuum() {}
     Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition);
 
     /* Methods */

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <thread>
+#include <exception>
 
 #include <SFML/Graphics.hpp>
 
@@ -18,9 +19,23 @@ int main(int argc, char* argv[]) {
     }
 
     // Charger la map et la lancer
-    MapReal map = Loader::loadMap(std::string(argv[1]));
+
+    MapReal map;
+    try {
+        map = Loader::loadMap(std::string(argv[1]));
+    } catch(const std::string& e) {
+        std::cerr << e << std::endl;
+    }
     std::cout << map;
     std::thread threadMap = map.start();
+    // Charger l'aspirateur, l'ajouter dans la map et le lancer
+    Vacuum vacuum;
+    try {
+        vacuum = Loader::loadVacuum(std::string(argv[2]), map);
+    } catch(const std::string& e) {
+        std::cerr << e << std::endl;
+    }
+    std::thread threadVacuum = vacuum.start();
 
     //TODO SFML
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
@@ -48,11 +63,8 @@ int main(int argc, char* argv[]) {
         app.draw(rectangle);
         app.display();
     }
-    // Charger l'aspirateur, l'ajouter dans la map et le lancer
-    //Vacuum vacuum = Loader::loadVacuum(std::string(argv[2]));
-    //std::thread threadVacuum = vacuum.start();
     // Attendre la fin de l'exécution de la map et de l'aspirateur
-    //threadMap.join();
-    //threadVacuum.join();
+    threadMap.join();
+    threadVacuum.join();
     return EXIT_SUCCESS;
 }
