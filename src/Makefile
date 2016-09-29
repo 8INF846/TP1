@@ -1,7 +1,7 @@
 CC := g++
 CPP_FILES := $(wildcard *.cpp)
 H_FILES := $(wildcard *.h)
-LD_FLAGS :=
+LD_FLAGS := -lsfml-graphics -lsfml-window -lsfml-system
 #Make difference between x86 and arm
 ifeq ($(shell uname -m), armv7l)
 CC := $(CC)-6

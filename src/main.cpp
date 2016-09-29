@@ -1,6 +1,8 @@
 #include <iostream>
 #include <thread>
 
+#include <SFML/Graphics.hpp>
+
 #include "Loader.h"
 #include "Startable.h"
 
@@ -18,6 +20,33 @@ int main(int argc, char* argv[]) {
     // Charger la map et la lancer
     MapReal map = Loader::loadMap(std::string(argv[1]));
     std::cout << map;
+
+    //TODO SFML
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    sf::RenderWindow app(
+    sf::VideoMode(desktop.width, desktop.height, desktop.bitsPerPixel),
+    "TP1 IA",
+    sf::Style::Close | sf::Style::Titlebar );
+
+    //TODO move to a thread
+    while (app.isOpen())
+    {
+        sf::Event event;
+        while (app.waitEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+            app.close();
+        }
+        app.clear();
+        sf::RectangleShape rectangle;
+        rectangle.setSize(sf::Vector2f(100, 50));
+        rectangle.setOutlineColor(sf::Color::Red);
+        rectangle.setFillColor(sf::Color::Green);
+        rectangle.setOutlineThickness(5);
+        rectangle.setPosition(10, 20);
+        app.draw(rectangle);
+        app.display();
+    }
     //std::thread threadMap = map.start();
     // Charger l'aspirateur, l'ajouter dans la map et le lancer
     //Vacuum vacuum = Loader::loadVacuum(std::string(argv[2]));
