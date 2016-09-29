@@ -16,7 +16,9 @@ public:
     virtual unsigned int width() const = 0;
     virtual unsigned int height() const = 0;
     virtual void setIsFloor(Pos p, bool isFloor) = 0;
+    virtual void addJewel(Pos p) = 0;
     virtual void gatherJewelry(Pos p) = 0;
+    virtual void addDirt(Pos p, double delta) = 0;
     virtual void suckDirt(Pos p, double delta) = 0;
     virtual void update(double delta = 0) = 0;
 };

@@ -1,6 +1,7 @@
 #include "Startable.h"
 
 #include <chrono>
+#include <iostream>
 
 std::thread Startable::start() {
     m_bShouldStop = false;
@@ -23,6 +24,7 @@ void Startable::run() {
         delta = deltaDuration.count();
         startTime = endTime;
 
+        std::cout << "Startable" << std::endl;
         update(delta);
     }
 }
