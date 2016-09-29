@@ -6,10 +6,6 @@ SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     _energy = 100.;
 }
 
-void SuckWithLevelStrategy::reset() {
-
-}
-
 Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 {
     Action finalAction;

@@ -8,7 +8,6 @@
 
 class Strategy {
 public:
-    virtual void reset() = 0;
     virtual Action findNextAction(const Sensors& sensors) = 0;
 
 protected:

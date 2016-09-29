@@ -7,7 +7,6 @@
 class SuckWithLevelStrategy : public Strategy {
 public:
     SuckWithLevelStrategy();
-    void reset();
     Action findNextAction(const Sensors& sensors);
 
 private:

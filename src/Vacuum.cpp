@@ -11,7 +11,6 @@ Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition) :
     m_position(basePosition),
     m_basePosition(basePosition),
     m_strategy(std::move(strategy))  {
-    m_strategy->reset();
 }
 
 /* Public methods */
