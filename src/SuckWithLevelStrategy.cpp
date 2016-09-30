@@ -23,7 +23,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     auto maxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
-    scoreSuck += 25*sensors.dirt;
+    scoreSuck += 60*sensors.dirt;
     if(sensors.dirt > 0.2) scoreSuck += 150*sensors.dirt;
     scoreSuck -= 200*sensors.jewelry; //If jewelry on the case
     scoreSuck -= sensors.battery < 30 ? std::pow(30-sensors.battery, 2) : 0;
@@ -40,7 +40,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
         maxScore = scoreGather;
     }
 
-    auto scoreMoveNorth = 0.0;
+    auto scoreMoveNorth = -1.0;
     if(sensors.north) {
         if(m_internalMap[m_currentPos.y-1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveNorth += getScoreDiscoverCase();
 
@@ -50,7 +50,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
         }
     }
 
-    auto scoreMoveSouth = 0.0;
+    auto scoreMoveSouth = -1.0;
     if(sensors.south) {
         if(m_internalMap[m_currentPos.y+1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveSouth += getScoreDiscoverCase();
 
@@ -60,7 +60,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
         }
     }
 
-    auto scoreMoveEast = 0.0;
+    auto scoreMoveEast = -1.0;
     if(sensors.east) {
         if(m_internalMap[m_currentPos.y][m_currentPos.x+1].dirtLevel == UNKNOWN_STATUS) scoreMoveEast += getScoreDiscoverCase();
 
@@ -70,7 +70,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
         }
     }
 
-    auto scoreMoveWest = 0.0;
+    auto scoreMoveWest = -1.0;
     if(sensors.west) {
         if(m_internalMap[m_currentPos.y][m_currentPos.x-1].dirtLevel == UNKNOWN_STATUS) scoreMoveWest += getScoreDiscoverCase();
 
@@ -218,6 +218,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     }
 
     std::cout << "Score:" << maxScore <<  std::endl;
+    std::cout << "Battery:" << sensors.battery <<  std::endl;
     printInternalMap(oldestCasePos);
     return finalAction;
 }
