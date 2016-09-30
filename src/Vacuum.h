@@ -19,6 +19,7 @@ public:
 
     /* Methods */
     bool isBusy();
+    bool batteryIsEmpty();
 
 private:
     /* Methods */

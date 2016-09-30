@@ -23,19 +23,21 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     auto maxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
-    scoreSuck += 100*sensors.dirt;
-    if(sensors.dirt > 0.2) scoreSuck += 100*sensors.dirt;
-    scoreSuck -= 100*sensors.jewelry; //If jewelry on the case
+    scoreSuck += 25*sensors.dirt;
+    if(sensors.dirt > 0.2) scoreSuck += 150*sensors.dirt;
+    scoreSuck -= 200*sensors.jewelry; //If jewelry on the case
     scoreSuck -= sensors.battery < 30 ? std::pow(30-sensors.battery, 2) : 0;
     if(scoreSuck > maxScore || (scoreSuck == maxScore && dist(mt) == 0)) {
         finalAction.type = Suck;
+        maxScore = scoreSuck;
     }
 
     auto scoreGather = -1.0; //(loose 1 of energy)
-    scoreGather += 100*sensors.jewelry; //If jewelry on the case
+    scoreGather += 200*sensors.jewelry; //If jewelry on the case
     scoreGather -= sensors.battery < 30 ? std::pow(30-sensors.battery, 2) : 0;
     if(scoreGather > maxScore || (scoreGather == maxScore && dist(mt) == 0)) {
         finalAction.type = Gather;
+        maxScore = scoreGather;
     }
 
     auto scoreMoveNorth = 0.0;
@@ -116,11 +118,13 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
                     }
                 }
             }
-
-            auto difftime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - m_internalMap[h][w].lastVisit;
-            if(difftime > oldestVisit) {
-                oldestCasePos.x = w;
-                oldestCasePos.y = h;
+            if(m_internalMap[h][w].isFloor) {
+                auto difftime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - m_internalMap[h][w].lastVisit;
+                if(difftime > oldestVisit) {
+                    oldestCasePos.x = w;
+                    oldestCasePos.y = h;
+                    oldestVisit = difftime;
+                }
             }
         }
     }
@@ -128,28 +132,28 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     //oldestVisit
     if(oldestCasePos.x != -1 && oldestCasePos.y != -1) {
         if(oldestCasePos.y < m_currentPos.y && sensors.north) {
-            scoreMoveNorth += 30;
+            scoreMoveNorth += 80;
             if(scoreMoveNorth > maxScore || (scoreMoveNorth == maxScore && dist(mt) == 0)) {
                 finalAction.type = GoNorth;
                 maxScore = scoreMoveNorth;
             }
         }
         if(oldestCasePos.y > m_currentPos.y && sensors.south) {
-            scoreMoveSouth += 30;
+            scoreMoveSouth += 80;
             if(scoreMoveSouth > maxScore || (scoreMoveSouth == maxScore && dist(mt) == 0)) {
                 finalAction.type = GoSouth;
                 maxScore = scoreMoveSouth;
             }
         }
         if(oldestCasePos.x < m_currentPos.x && sensors.west) {
-            scoreMoveWest += 30;
+            scoreMoveWest += 80;
             if(scoreMoveWest > maxScore || (scoreMoveWest == maxScore && dist(mt) == 0)) {
                 finalAction.type = GoWest;
                 maxScore = scoreMoveWest;
             }
         }
         if(oldestCasePos.x > m_currentPos.x && sensors.east) {
-            scoreMoveEast += 30;
+            scoreMoveEast += 80;
             if(scoreMoveEast > maxScore || (scoreMoveEast == maxScore && dist(mt) == 0)) {
                 finalAction.type = GoEast;
                 maxScore = scoreMoveEast;
@@ -203,10 +207,50 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     case GoSouth:
         m_currentPos.y+=1;
         break;
+    case Gather:
+        m_internalMap[m_currentPos.y][m_currentPos.x].jewelry = 0;
+        break;
+    case Suck:
+        m_internalMap[m_currentPos.y][m_currentPos.x].dirtLevel = 0;
+        break;
     default:
         break;
     }
+
+    std::cout << "Score:" << maxScore <<  std::endl;
+    printInternalMap(oldestCasePos);
     return finalAction;
+}
+
+void SuckWithLevelStrategy::printInternalMap(Pos oldest) {
+    std::cout << std::endl;
+    for(size_t h = 0; h < m_internalMap.size(); ++h) {
+        for(size_t w = 0; w < m_internalMap[0].size(); ++w) {
+            if(m_internalMap[h][w].isFloor) {
+                std::cout << "| d:" << (m_internalMap[h][w].dirtLevel*10)
+                << " j:" << m_internalMap[h][w].jewelry;
+                if(m_currentPos.x == (int)w && m_currentPos.y == (int)h) {
+                    std::cout << " (X)";
+                } else {
+                    std::cout << " (_)";
+                }
+
+                if(m_basePos.x == (int)w && m_basePos.y == (int)h) {
+                    std::cout << " C ";
+                } else {
+                    std::cout << "   ";
+                }
+
+                if(oldest.x == (int)w && oldest.y == (int)h) {
+                    std::cout << " O ";
+                } else {
+                    std::cout << "   ";
+                }
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
 }
 
 

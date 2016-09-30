@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     //TODO SFML
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
     sf::RenderWindow app(
-    sf::VideoMode(desktop.width, desktop.height, desktop.bitsPerPixel),
+    sf::VideoMode(desktop.width, desktop.height),
     "TP1 IA",
     sf::Style::Close | sf::Style::Titlebar );
 
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
             if (event.type == sf::Event::Closed)
             app.close();
         }
-        app.clear();
+        app.clear(sf::Color(0,255,0,255));
         sf::RectangleShape rectangle;
         rectangle.setSize(sf::Vector2f(100, 50));
         rectangle.setOutlineColor(sf::Color::Red);

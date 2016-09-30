@@ -14,11 +14,12 @@ public:
 
 private:
     void updateInternalMap(const Sensors& sensors);
+    void printInternalMap(Pos oldest);
 
     std::deque<std::deque<Case>> m_internalMap;
     Pos m_basePos;
     Pos m_currentPos;
- 
+
 
     float getScoreDiscoverCase();
     float getScoreIddle();
