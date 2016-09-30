@@ -205,8 +205,4 @@ Action SuckWithLevelStrategy::pickAction() {
 
     return chosenAction;
 }
-
-void SuckWithLevelStrategy::reset() {
-
-}
 */

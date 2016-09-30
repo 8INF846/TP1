@@ -4,12 +4,15 @@
 #include "Strategy.h"
 #include "Action.h"
 
+#include <deque>
+
 class SuckWithLevelStrategy : public Strategy {
 public:
     SuckWithLevelStrategy();
     Action findNextAction(const Sensors& sensors);
 
 private:
+    std::deque<std::deque<Case>> _internalMap;
     /*void initializeInternalMap();
     Action pickAction();
     float getScoreMove(Pos p);
@@ -18,7 +21,6 @@ private:
     float _jewelLevelProb;
     float _suckLevel;
     float _lowBattery;
-    std::vector<std::vector<Case>> _internalMap;
     float _score;*/
 };
 

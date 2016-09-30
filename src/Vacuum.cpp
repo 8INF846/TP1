@@ -6,11 +6,12 @@
 #include "Sensors.h"
 
 /* Public constructors */
-Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition) :
+Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, MapReal map) :
     m_dBattery(100.),
     m_position(basePosition),
     m_basePosition(basePosition),
-    m_strategy(std::move(strategy))  {
+    m_strategy(std::move(strategy)),
+    m_map(std::make_unique<MapReal>(map))  {
 }
 
 /* Public methods */
@@ -21,7 +22,6 @@ bool Vacuum::isBusy() {
 /* Private methods */
 Sensors Vacuum::observe() const {
     Sensors sensors;
-
     // North
     Pos position = m_position;
     position.y -= 1;
@@ -90,11 +90,13 @@ void Vacuum::update(double delta) {
     std::cout << "[Vacuum]sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
     std::this_thread::sleep_for(delay);
 
-    /*TODO Sensors sensors = observe();
+    Sensors sensors = observe();
+
+    std::cout << sensors.battery << std::endl;
 
     // Executer une action
     if(!isBusy()) {
         findNextAction(sensors);
     }
-    executeCurrentAction(delta);*/
+    executeCurrentAction(delta);
 }

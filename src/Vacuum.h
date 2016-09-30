@@ -8,7 +8,6 @@
 #include "Pos.h"
 #include "Strategy.h"
 #include "Action.h"
-#include "Map.h"
 #include "Sensors.h"
 
 
@@ -16,7 +15,7 @@ class Vacuum : public Startable {
 public:
     /* Constructors */
     Vacuum() {}
-    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition);
+    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, MapReal map);
 
     /* Methods */
     bool isBusy();
@@ -35,7 +34,7 @@ private:
     bool m_bShouldStop;
     std::unique_ptr<Strategy> m_strategy;
     Action m_currentAction;
-    std::unique_ptr<Map> m_map;
+    std::unique_ptr<MapReal> m_map;
 };
 
 #endif

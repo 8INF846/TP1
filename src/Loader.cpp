@@ -84,7 +84,7 @@ Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
                     } else {
                         strategy = std::make_unique<SuckWithLevelStrategy>();
                     }
-                } else if (param == "pos") {
+                } else if (param == "base") {
                     std::string pos = value;
                     std::string current;
                     for(size_t c = 0; c < pos.size(); ++c) {
@@ -99,15 +99,16 @@ Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
                             current += pos[c];
                         }
                     }
-                    try {
-                        map.isFloor(basePos);
-                    } catch(const std::string & e) {
-                        throw std::string("Can't set basePos for Vacuum");
-                    }
                 }
             }
         }
     }
 
-    return Vacuum(strategy, basePos);
+    try {
+        map.isFloor(basePos);
+    } catch(const std::string & e) {
+        throw std::string("Can't set basePos for Vacuum");
+    }
+
+    return Vacuum(strategy, basePos, map);
 }
