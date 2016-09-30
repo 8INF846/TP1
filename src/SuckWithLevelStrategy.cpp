@@ -246,6 +246,8 @@ void SuckWithLevelStrategy::printInternalMap(Pos oldest) {
                 } else {
                     std::cout << "   ";
                 }
+            } else {
+                std::cout << "|==================|";
             }
         }
         std::cout << std::endl;
