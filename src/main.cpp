@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
         std::cerr << e << std::endl;
     }
     std::cout << map;
+
     std::thread threadMap = map.start();
     // Charger l'aspirateur, l'ajouter dans la map et le lancer
     Vacuum vacuum;

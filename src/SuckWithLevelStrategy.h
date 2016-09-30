@@ -18,19 +18,10 @@ private:
     std::deque<std::deque<Case>> m_internalMap;
     Pos m_basePos;
     Pos m_currentPos;
+ 
 
     float getScoreDiscoverCase();
     float getScoreIddle();
-
-    /*void initializeInternalMap();
-    Action pickAction();
-    float getScoreMove(Pos p);
-
-    float _dirtLevelProb;
-    float _jewelLevelProb;
-    float _suckLevel;
-    float _lowBattery;
-    float _score;*/
 };
 
 #endif

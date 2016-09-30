@@ -9,7 +9,7 @@ struct Case {
     bool isFloor;
     float dirtLevel;
     int jewelry;
-    std::time_t lastVisit; //internal use for agent - TODO move?
+    std::time_t lastVisit;
 };
 
 #endif
