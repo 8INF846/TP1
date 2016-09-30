@@ -19,6 +19,9 @@ private:
     Pos m_basePos;
     Pos m_currentPos;
 
+    float getScoreDiscoverCase();
+    float getScoreIddle();
+
     /*void initializeInternalMap();
     Action pickAction();
     float getScoreMove(Pos p);

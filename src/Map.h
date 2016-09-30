@@ -19,7 +19,7 @@ public:
     virtual void addJewel(Pos p) = 0;
     virtual void gatherJewelry(Pos p) = 0;
     virtual void addDirt(Pos p, double delta) = 0;
-    virtual void suckDirt(Pos p, double delta) = 0;
+    virtual void suckDirt(Pos p) = 0;
     virtual void update(double delta = 0) = 0;
 };
 

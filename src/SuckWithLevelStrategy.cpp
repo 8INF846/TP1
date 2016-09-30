@@ -1,6 +1,7 @@
 #include "SuckWithLevelStrategy.h"
 
 #include <iostream>
+#include <random>
 
 SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     m_fenergy = 100.;
@@ -14,17 +15,100 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     Action finalAction;
     updateInternalMap(sensors);
 
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_int_distribution<int> dist(0,1);
+
+    auto scoreIddle = getScoreIddle();
+    auto maxScore = scoreIddle;
+
+    if(sensors.north) {
+        auto scoreMoveNorth = 0.0;
+        if(m_internalMap[m_currentPos.y-1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveNorth += getScoreDiscoverCase();
+
+        if(scoreMoveNorth > maxScore || (scoreMoveNorth == maxScore && dist(mt) == 0)) {
+            finalAction.type = GoNorth;
+            maxScore = scoreMoveNorth;
+        }
+    }
+
+    if(sensors.south) {
+        auto scoreMoveSouth = 0.0;
+        if(m_internalMap[m_currentPos.y+1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveSouth += getScoreDiscoverCase();
+
+        if(scoreMoveSouth > maxScore || (scoreMoveSouth == maxScore && dist(mt) == 0)) {
+            finalAction.type = GoSouth;
+            maxScore = scoreMoveSouth;
+        }
+    }
+
+    if(sensors.east) {
+        auto scoreMoveEast = 0.0;
+        if(m_internalMap[m_currentPos.y][m_currentPos.x+1].dirtLevel == UNKNOWN_STATUS) scoreMoveEast += getScoreDiscoverCase();
+
+        if(scoreMoveEast > maxScore || (scoreMoveEast == maxScore && dist(mt) == 0)) {
+            finalAction.type = GoEast;
+            maxScore = scoreMoveEast;
+        }
+    }
+
+    if(sensors.west) {
+        auto scoreMoveWest = 0.0;
+        if(m_internalMap[m_currentPos.y][m_currentPos.x-1].dirtLevel == UNKNOWN_STATUS) scoreMoveWest += getScoreDiscoverCase();
+
+        if(scoreMoveWest > maxScore || (scoreMoveWest == maxScore && dist(mt) == 0)) {
+            finalAction.type = GoWest;
+            maxScore = scoreMoveWest;
+        }
+    }
+
+    //TODO Aller vers case éloignée (découvrir une nouvelle si il y en a,
+    //ou aller vers la case la plus sale en passant ou non vers l'origine pour charger
+
+    //Update internal state
+    switch (finalAction.type)
+    {
+    case GoNorth:
+        m_currentPos.y-=1;
+        break;
+    case GoWest:
+        m_currentPos.x-=1;
+        break;
+    case GoEast:
+        m_currentPos.x+=1;
+        break;
+    case GoSouth:
+        m_currentPos.y+=1;
+        break;
+    default:
+        break;
+    }
     return finalAction;
 }
 
+
+float SuckWithLevelStrategy::getScoreDiscoverCase() {
+    return 100.;
+}
+
+float SuckWithLevelStrategy::getScoreIddle() {
+    return (m_currentPos.x == m_basePos.x)
+    && (m_currentPos.y == m_basePos.y) ?
+    100.-m_fenergy : 0;
+}
+
 void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
-    std::cout << m_internalMap.size() << ":" << m_internalMap.at(0).size() << std::endl;
+    m_internalMap[m_currentPos.y][m_currentPos.x].isFloor = true;
+    m_internalMap[m_currentPos.y][m_currentPos.x].dirtLevel = sensors.dirt;
+    m_internalMap[m_currentPos.y][m_currentPos.x].jewelry = sensors.jewelry;
+
     if(m_currentPos.x == 0) {
         if(sensors.west) {
             //Add a col
             for(size_t h = 0; h < m_internalMap.size(); ++h) {
                 Case c;
-                c.isFloor = h == m_currentPos.y;
+                c.isFloor = (int)h == m_currentPos.y;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
                 m_internalMap.at(h).push_front(c);
@@ -40,7 +124,7 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
             std::deque<Case> newRow;
             for(size_t w = 0; w < m_internalMap.at(0).size(); ++w) {
                 Case c;
-                c.isFloor = w == m_currentPos.x;
+                c.isFloor = (int)w == m_currentPos.x;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
                 newRow.push_back(c);
@@ -51,25 +135,25 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
             m_basePos.y += 1;
         }
     }
-    if(m_currentPos.x == m_internalMap.at(0).size()-1) {
+    if(m_currentPos.x == (int)m_internalMap.at(0).size()-1) {
         if(sensors.east) {
             //Add a col
             for(size_t h = 0; h < m_internalMap.size(); ++h) {
                 Case c;
-                c.isFloor = h == m_currentPos.y;
+                c.isFloor = (int)h == m_currentPos.y;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
                 m_internalMap.at(h).push_back(c);
             }
         }
     }
-    if(m_currentPos.y == m_internalMap.size()-1) {
+    if(m_currentPos.y == (int)m_internalMap.size()-1) {
         if(sensors.south) {
             //Add a row
             std::deque<Case> newRow;
             for(size_t w = 0; w < m_internalMap.at(0).size(); ++w) {
                 Case c;
-                c.isFloor = w == m_currentPos.x;
+                c.isFloor = (int)w == m_currentPos.x;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
                 newRow.push_back(c);
@@ -83,7 +167,7 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
         if(sensors.north && !m_internalMap[m_currentPos.y-1][m_currentPos.x].isFloor)
         m_internalMap[m_currentPos.y-1][m_currentPos.x].isFloor = true;
     }
-    if(m_currentPos.y < m_internalMap.size()-1) {
+    if(m_currentPos.y < (int)m_internalMap.size()-1) {
         if(sensors.south && !m_internalMap[m_currentPos.y+1][m_currentPos.x].isFloor)
         m_internalMap[m_currentPos.y+1][m_currentPos.x].isFloor = true;
     }
@@ -91,11 +175,10 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
         if(sensors.west && !m_internalMap[m_currentPos.y][m_currentPos.x-1].isFloor)
         m_internalMap[m_currentPos.y][m_currentPos.x-1].isFloor = true;
     }
-    if(m_currentPos.x < m_internalMap.at(0).size()-1) {
+    if(m_currentPos.x < (int)m_internalMap.at(0).size()-1) {
         if(sensors.east && !m_internalMap[m_currentPos.y][m_currentPos.x+1].isFloor)
         m_internalMap[m_currentPos.y][m_currentPos.x+1].isFloor = true;
     }
-    std::cout << m_internalMap.size() << ":" << m_internalMap.at(0).size() << std::endl;
 }
 
 /*SuckWithLevelStrategy::SuckWithLevelStrategy(MapReal& map, const Pos pBase) : Strategy(map, pBase) {
@@ -103,24 +186,8 @@ initializeInternalMap();
 _suckLevel = 0.2;
 }
 
-void SuckWithLevelStrategy::initializeInternalMap() {
-for(unsigned int h = 0; h <= _map.height(); ++h) {
-_internalMap.push_back(std::vector<Case>());
-for(unsigned int w = 0; w <= _map.width(); ++w) {
-Pos pCase;
-pCase.x = w;
-pCase.y = h;
-Case c;
-c.isFloor = _map.isFloor(pCase);
-c.dirtLevel = UNKNOWN_STATUS;
-c.jewelry = UNKNOWN_STATUS;
-_internalMap.at(h).push_back(c);
-}
-}
-}
 
 void SuckWithLevelStrategy::observeAndUpdate() {
-if(_internalMap.size() == 0) throw "[Vacuum] Internal Map is not initialized";
 
 auto height = _internalMap.size();
 auto width  = _internalMap.at(0).size();

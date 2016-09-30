@@ -54,14 +54,11 @@ void MapReal::addDirt(Pos p, double delta) {
     }
 }
 
-void MapReal::suckDirt(Pos p, double delta) {
+void MapReal::suckDirt(Pos p) {
     if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
         throw std::string("Position out of map cannot be changed");
     }
-    m_cases[p.y][p.x].dirtLevel -= delta;
-    if(m_cases[p.y][p.x].dirtLevel < 0) {
-        m_cases[p.y][p.x].dirtLevel = 0;
-    }
+    m_cases[p.y][p.x].dirtLevel = 0;
 }
 
 unsigned int MapReal::width() const {

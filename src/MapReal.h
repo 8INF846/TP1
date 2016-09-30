@@ -23,7 +23,7 @@ public:
     void addJewel(Pos p);
     void gatherJewelry(Pos p);
     void addDirt(Pos p, double delta);
-    void suckDirt(Pos p, double delta);
+    void suckDirt(Pos p);
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
     void update(double delta);
