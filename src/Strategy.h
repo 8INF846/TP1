@@ -11,7 +11,7 @@ public:
     virtual Action findNextAction(const Sensors& sensors) = 0;
 
 protected:
-    float _energy;
+    float m_fenergy;
 };
 
 #endif

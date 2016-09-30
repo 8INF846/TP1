@@ -32,7 +32,7 @@ Sensors Vacuum::observe() const {
     // Est
     position.y -= 1;
     position.x += 1;
-    sensors.est = m_map->isFloor(position);
+    sensors.east = m_map->isFloor(position);
     // West
     position.x -= 2;
     sensors.west = m_map->isFloor(position);

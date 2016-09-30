@@ -4,7 +4,7 @@
 struct Sensors {
     bool north;
     bool south;
-    bool est;
+    bool east;
     bool west;
     double dirt;
     int jewelry;

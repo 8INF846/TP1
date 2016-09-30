@@ -3,6 +3,7 @@
 
 #include "Strategy.h"
 #include "Action.h"
+#include "Pos.h"
 
 #include <deque>
 
@@ -12,7 +13,12 @@ public:
     Action findNextAction(const Sensors& sensors);
 
 private:
-    std::deque<std::deque<Case>> _internalMap;
+    void updateInternalMap(const Sensors& sensors);
+
+    std::deque<std::deque<Case>> m_internalMap;
+    Pos m_basePos;
+    Pos m_currentPos;
+
     /*void initializeInternalMap();
     Action pickAction();
     float getScoreMove(Pos p);
