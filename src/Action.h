@@ -1,6 +1,9 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+/**
+ * All possible types for Action.type
+ */
 enum ActionType {
     GoNorth,
     GoSouth,

@@ -62,36 +62,36 @@ void Vacuum::executeCurrentAction(double delta) {
         case GoNorth:
             m_dBattery -= 1.;
             m_position.y -= 1;
-            std::cout << "[VACUUM]GONORTH (" << m_position.x << ";" << m_position.y << ")" << std::endl;
+            std::cout << "[VACUUM]GONORTH" << m_position << std::endl;
             break;
         case GoSouth:
             m_dBattery -= 1.;
             m_position.y += 1;
-            std::cout << "[VACUUM]GOSOUTH (" << m_position.x << ";" << m_position.y << ")" << std::endl;
+            std::cout << "[VACUUM]GOSOUTH" << m_position << std::endl;
             break;
         case GoEast:
             m_dBattery -= 1.;
             m_position.x += 1;
-            std::cout << "[VACUUM]GOEAST (" << m_position.x << ";" << m_position.y << ")" << std::endl;
+            std::cout << "[VACUUM]GOEAST" << m_position << std::endl;
             break;
         case GoWest:
             m_dBattery -= 1.;
             m_position.x -= 1;
-            std::cout << "[VACUUM]GOWEST (" << m_position.x << ";" << m_position.y << ")" << std::endl;
+            std::cout << "[VACUUM]GOWEST" << m_position << std::endl;
             break;
         case Gather:
             m_dBattery -= 1.;
-            std::cout << "[VACUUM]GATHER (" << m_position.x << ";" << m_position.y << ")" << std::endl;
+            std::cout << "[VACUUM]GATHER" << m_position << std::endl;
             m_map->gatherJewelry(m_position);
             break;
         case Suck:
             m_dBattery -= 1.;
-            std::cout << "[VACUUM]SUCKDIRT (" << m_position.x << ";" << m_position.y << ")" << std::endl;
+            std::cout << "[VACUUM]SUCKDIRT" << m_position << std::endl;
             m_map->suckDirt(m_position);
             break;
         case Iddle:
-            std::cout << "[VACUUM]IDDLE (" << m_position.x << ";" << m_position.y << ")" << std::endl;
-            if((m_position.x == m_basePosition.x) && (m_position.y == m_basePosition.y)) m_dBattery = 100.;
+            std::cout << "[VACUUM]IDDLE" << m_position << std::endl;
+            if(m_position == m_basePosition) m_dBattery = 100.;
             break;
         default:
             break;

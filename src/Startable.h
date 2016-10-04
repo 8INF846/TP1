@@ -5,7 +5,14 @@
 
 class Startable {
 public:
+    /**
+     * Start thread
+     * @return the thread started
+     */
     std::thread start();
+    /**
+     * Stop the thread
+     */
     void stop();
 
 protected:

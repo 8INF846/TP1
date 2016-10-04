@@ -11,7 +11,7 @@
 #include "SuckWithLevelStrategy.h"
 
 MapReal Loader::loadMap(const std::string& filename) {
-    // Lire le fichier
+    //Read the map file
     std::vector<std::vector<bool>> floor;
     size_t width = 0;
     std::ifstream file(filename, std::ios::app);
@@ -33,7 +33,7 @@ MapReal Loader::loadMap(const std::string& filename) {
     }
     unsigned int height = floor.size();
 
-    // Créer la map
+    //Create the map
     MapReal map(width, height);
     for(unsigned int h = 0; h < height; h++) {
         for(unsigned int w = 0; w < width; w++) {
@@ -67,6 +67,7 @@ Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
     while (std::getline(file, line))
     {
         const std::string s = line;
+        //Parse the file
         if(s.size() > 0 && s[0] != '#') {
             const std::regex parameter("(.+)=(.*)");
             std::smatch match;
@@ -79,12 +80,14 @@ Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
                 std::string value = std::string(match[2]);
                 std::transform(value.begin(), value.end(), value.begin(), ::tolower);
                 if(param == "strategy") {
+                    //Note we just have one strategy for now
                     if(value != "suckwithlevel") {
                         throw std::string("Can't choose unknown strategy: " + value);
                     } else {
                         strategy = std::make_unique<SuckWithLevelStrategy>();
                     }
                 } else if (param == "base") {
+                    //The position of the vacuum at t=0
                     std::string pos = value;
                     std::string current;
                     for(size_t c = 0; c < pos.size(); ++c) {
@@ -105,7 +108,9 @@ Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
     }
 
     try {
-        map.isFloor(basePos);
+        if(!map.isFloor(basePos)) {
+            throw std::string("Can't set basePos for Vacuum");
+        }
     } catch(const std::string & e) {
         throw std::string("Can't set basePos for Vacuum");
     }

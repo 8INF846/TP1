@@ -11,7 +11,6 @@ SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
 
 Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 {
-    //TODO show UI
     Action finalAction;
     updateInternalMap(sensors);
 
@@ -19,7 +18,8 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     std::mt19937 mt(rd());
     std::uniform_int_distribution<int> dist(0,1);
 
-    auto scoreIddle = getScoreIddle();
+    auto scoreIddle = (m_currentPos == m_basePos) ?
+    100.-sensors.battery : 0;
     auto maxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
@@ -40,6 +40,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
         maxScore = scoreGather;
     }
 
+    //Test if a new case is discovered
     auto scoreMoveNorth = -1.0;
     if(sensors.north) {
         if(m_internalMap[m_currentPos.y-1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveNorth += getScoreDiscoverCase();
@@ -49,7 +50,6 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
             maxScore = scoreMoveNorth;
         }
     }
-
     auto scoreMoveSouth = -1.0;
     if(sensors.south) {
         if(m_internalMap[m_currentPos.y+1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveSouth += getScoreDiscoverCase();
@@ -59,7 +59,6 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
             maxScore = scoreMoveSouth;
         }
     }
-
     auto scoreMoveEast = -1.0;
     if(sensors.east) {
         if(m_internalMap[m_currentPos.y][m_currentPos.x+1].dirtLevel == UNKNOWN_STATUS) scoreMoveEast += getScoreDiscoverCase();
@@ -69,7 +68,6 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
             maxScore = scoreMoveEast;
         }
     }
-
     auto scoreMoveWest = -1.0;
     if(sensors.west) {
         if(m_internalMap[m_currentPos.y][m_currentPos.x-1].dirtLevel == UNKNOWN_STATUS) scoreMoveWest += getScoreDiscoverCase();
@@ -87,7 +85,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     oldestCasePos.y=-1;
     for(size_t h = 0; h < m_internalMap.size(); ++h) {
         for(size_t w = 0; w < m_internalMap[0].size(); ++w) {
-            //If a case is unknown!
+            //Test if a case is not visited
             if(m_internalMap[h][w].isFloor && m_internalMap[h][w].dirtLevel == UNKNOWN_STATUS) {
                 if((int)h < m_currentPos.y && sensors.north) {
                     scoreMoveNorth += 70;
@@ -118,6 +116,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
                     }
                 }
             }
+            //Find the oldest case
             if(m_internalMap[h][w].isFloor) {
                 auto difftime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()) - m_internalMap[h][w].lastVisit;
                 if(difftime > oldestVisit) {
@@ -261,18 +260,11 @@ float SuckWithLevelStrategy::getScoreDiscoverCase() {
     return 100.;
 }
 
-float SuckWithLevelStrategy::getScoreIddle() {
-    return (m_currentPos.x == m_basePos.x)
-    && (m_currentPos.y == m_basePos.y) ?
-    100.-m_fenergy : 0;
-}
-
 void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
     m_internalMap[m_currentPos.y][m_currentPos.x].isFloor = true;
     m_internalMap[m_currentPos.y][m_currentPos.x].dirtLevel = sensors.dirt;
     m_internalMap[m_currentPos.y][m_currentPos.x].jewelry = sensors.jewelry;
     m_internalMap[m_currentPos.y][m_currentPos.x].lastVisit = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    m_fenergy = sensors.battery;
 
     if(m_currentPos.x == 0) {
         if(sensors.west) {

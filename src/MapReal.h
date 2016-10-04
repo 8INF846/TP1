@@ -24,6 +24,9 @@ public:
     void gatherJewelry(Pos p);
     void addDirt(Pos p, double delta);
     void suckDirt(Pos p);
+    /**
+     * Print a map
+     */
     friend std::ostream& operator<<(std::ostream& output, const MapReal& mapReal);
 
     void update(double delta);

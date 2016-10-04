@@ -70,7 +70,6 @@ unsigned int MapReal::height() const {
 }
 
 void MapReal::update(double delta) {
-    // TODO update de la map pendant delta secondes
     std::random_device rd;
     std::default_random_engine mt(rd());
     std::uniform_int_distribution<int> random_event(0, 5);
