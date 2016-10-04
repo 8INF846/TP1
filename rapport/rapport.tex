@@ -1,0 +1,131 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{minted}
+
+\begin{document}
+
+%title
+\begin{titlepage}
+	\vspace{-20px}
+	\begin{tabular}{l}
+		\textsc{Blin} Sébastien\\
+		\textsc{Drouin Viallard} Victor
+	\end{tabular}
+	\hfill \vspace{10px}\includegraphics[scale=0.1]{uqac}\\
+	\vfill
+	\begin{center}
+		\Huge{Université du Quebec à Chicoutimi}\\
+		\vspace{1cm}
+		\LARGE{Maîtrise professionnelle}\\
+		\large{Parcours Informatique}\\
+		\vspace{0.5cm}\hrule\vspace{0.5cm}
+		\LARGE{\textbf{TP 1 8INF846}}\\
+		\Large{Réalisation d'un agent intelligent}
+		\vspace{0.5cm}\hrule
+		\vfill
+		\vfill
+	\end{center}
+	\begin{flushleft}
+		\Large{Sous l'encadrement de~:}\\
+		\vspace{0.2cm}
+		\large{\textsc{Bouchard} Kévin}
+	\end{flushleft}
+	\vfill
+\end{titlepage}
+
+\section{Introduction}
+Le but de ce premier TP était de réaliser un agent intelligent. Cet agent prend la forme d'un aspirateur qui doit aspirer les pièces d'un manoir où de la poussière et des bijoux apparaissent de manière aléatoire. De plus, l'agent doit posséder un état mental de type BDI comme vu en cours. Dans ce rapport, nous verrons dans une première partie comment exécuter le programme, puis en second temps nous justifierons nos choix de modélisation.
+\section{Exécution du programme}
+\subsection{Dépendances du projet}
+Ce devoir a été développé en \emph{C++14} et a été testé sur des environnements \emph{Linux} (mais fonctionne normalement sur Windows). Pour compiler le programme il vous faut~:
+\begin{itemize}
+    \item \emph{G++} (version 6 recommandée)
+    \item La librairie \emph{SFML}
+    \item \emph{Make}
+\end{itemize}
+\subsection{Compilation}
+Pour compiler le programme, il suffit d'exécuter la commande \emph{make}. Un binaire nommé \emph{agentTP1} sera alors présent.
+\subsection{Configuration et exécution}
+Le fichier possède 2 fichiers de configuration. Le premier décrit la carte dans laquelle l'agent va évoluer. Par exemple, voici le fichier de configuration qui correspond à la carte du TP1~:
+\begin{minted}{python}
+11100
+11111
+11100
+\end{minted}
+
+Le second fichier configure l'agent. On peut lui donner le nom de la stratégie souhaitée (pour le moment une seule stratégie est implémentée) ainsi que sa position de base dans la carte~:
+
+\begin{minted}{python}
+###############################################################################
+#                              VACUUM PARAMETERS                              #
+###############################################################################
+
+# Strategy for the agent
+# {SuckWithLevel}
+strategy=SuckWithLevel
+base=0;0
+\end{minted}
+
+Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
+\begin{verbatim}
+./agentTP1 map vacuum
+\end{verbatim}
+
+\section{Structure du programme}
+\subsection{Structure générale}
+Comme demandé dans le sujet, notre programme s'exécute sur deux threads. Le premier thread réalise toute la gestion de la carte en créant de la poussière et des bijoux. Le second thread correspond à l'agent en observant l'environnement visible, puis donne le résultat à une stratégie qui en déduit la prochaine action et l'agent l'exécute.
+
+Les fichiers intéressants pour la création et le lancement des threads sont \emph{main.cpp}, \emph{Loader.*} et \emph{Startable.*}.
+\subsection{L'environnement}
+L'interface de cette partie est présente dans le fichier \emph{Map.h} et est implémentée dans \emph{MapReal.*}. La carte est représentée par un vecteur de vecteur de Case (\emph{Case.h}) et est mise à jour dans la fonction \begin{minted}{cpp}
+void MapReal::update(double delta);
+\end{minted}
+qui consiste en une boucle ou un évènement (soit un ajout de bijoux avec une probabilité de 0.2, soit un ajout de poussière avec une probabilité de 0.8) sur une case tirée au hasard. Deux évènements sont espacés d'un temps aléatoire (entre 10 et 1000 ms).
+\subsection{L'aspirateur}
+L'agent reprend le fonctionnement donné en pseudo-code dans le sujet du TP, c'est-à-dire~:
+\begin{minted}{cpp}
+While (amIAlive()){
+    ObserveEnvironmentWithAllMySensors();
+    UpdateMyState();
+    ChooseAnAction();
+    justDoIt();
+}
+\end{minted}
+En effet, tout comme emph{MapReal}, on peut trouver la fonction~:
+\begin{minted}{cpp}
+void Vacuum::update(double delta);
+\end{minted}
+qui observera l'environnement en mettant à jour une structure \emph{Sensors} si la batterie de l'agent n'est pas vide via la fonction~:
+\begin{minted}{cpp}
+Sensors Vacuum::observe();
+\end{minted}
+L'objet \emph{Sensors} est décrit dans \emph{Sensors.h} et contient le niveau de poussière et le nombre de bijoux de la pièce, ainsi que la possibilité de se déplacer dans les pièces voisines. Cette captation est passée en paramètres à la stratégie qui s'occupera de mettre à jour l'état interne et de donner la prochaine action à exécuter (donc \emph{UpdateMyState()} et \emph{ChooseAnAction()} qui seront expliquées plus bas). Enfin, l'agent exécute l'Action retournée par la stratégie via la fonction ~:
+\begin{minted}{cpp}
+void Vacuum::executeCurrentAction(double delta);
+\end{minted}
+\subsection{La stratégie implémentée}
+L'intelligence de l'agent est implémentée dans une stratégie. Nous avons modélisé un agent basé sur les buts avec un état mental de type \textsc{bdi} dans les fichiers \emph{SuckWithLevelStrategy.*}. Les croyances de l'agent sont représentées par une map interne qui donne ce que sais l'agent à un moment T. Cette carte est mise à jour avant chaque décision via la fonction~:
+\begin{minted}{cpp}
+void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors);
+\end{minted}
+et est représentée via un \emph{std::deque<std::deque<Case>>} (plus facile à transformer lors de la découverte de la carte par l'agent).
+
+Le désir de l'agent est de rendre la carte la plus propre possible en évitant d'aspirer les bijoux (mais en les ramassant), tout en évitant de tomber en panne. Pour modéliser ces choix, une fonction s'occupe de donner un score à chaque action possible. Le but de l'agent est de maximiser son score. Cette prise de décision est modélisée dans la fonction~:
+\begin{minted}{cpp}
+Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors);
+\end{minted}
+Ainsi, l'action retournée correspond à son intention. Et on peut voir 4 intentions différentes~:
+\begin{itemize}
+    \item Nettoyer la poussière de la case quand l'agent pense qu'il y a assez de poussière
+    \item Ramasser les bijoux, dans ces 2 premiers cas le désir et l'intention sont identiques
+    \item Se déplacer vers la case qu'on a visité il y a le plus longtemps (ou il y a des chances d'avoir assez de poussière maintenant)
+    \item Se déplacer vers la case d'origine ou on peut se recharger. Dans ces deux derniers cas, I=la prochaine case visitée, D=Le chemin à parcourir pour se rendre à cette case. Bien sûr, sur la route, l'agent peut décider d'aspirer/ramasser les bijoux s'il le juge utile.
+\end{itemize}
+
+\section{Conclusion}
+Au final, ce projet nous a permis d'implémenter plusieurs fonctionnements décrits en cours. Tout d'abord le concept d'agent ou nous avons dû réfléchir à quel type d'agent notre aspirateur correspondait. Ensuite, le principe d'état mental BDI. Enfin, comment implémenter la prise de décision à l'aide d'un scoring des différentes actions.
+
+\end{document}
