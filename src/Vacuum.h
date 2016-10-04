@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "Map.h"
 #include "Startable.h"
 #include "Pos.h"
 #include "Strategy.h"
@@ -15,11 +16,13 @@ class Vacuum : public Startable {
 public:
     /* Constructors */
     Vacuum() {}
-    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, MapReal& map);
+    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map);
 
     /* Methods */
     bool isBusy();
     bool batteryIsEmpty();
+    Pos position() const;
+    Pos basePosition() const;
 
 private:
     /* Methods */
@@ -35,7 +38,7 @@ private:
     bool m_bShouldStop;
     std::unique_ptr<Strategy> m_strategy;
     Action m_currentAction;
-    MapReal* m_map;
+    Map* m_map;
 };
 
 #endif

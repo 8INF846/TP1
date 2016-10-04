@@ -1,51 +1,51 @@
-#include "MapReal.h"
+#include "Map.h"
 
 #include <iostream>
 #include <chrono>
 #include <random>
 #include <exception>
 
-MapReal::MapReal(unsigned int width, unsigned int height) : m_cases(height, std::vector<Case>(width))
+Map::Map(unsigned int width, unsigned int height) : m_cases(height, std::vector<Case>(width))
 {}
 
-bool MapReal::isFloor(Pos p) const {
-    if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
+bool Map::isFloor(Pos p) const {
+    if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         return false;
     }
     return m_cases[p.y][p.x].isFloor;
 }
 
-float MapReal::dirtLevel(Pos p) const {
+float Map::dirtLevel(Pos p) const {
     return m_cases[p.y][p.x].dirtLevel;
 }
 
-int MapReal::jewelry(Pos p) const {
+int Map::jewelry(Pos p) const {
     return m_cases[p.y][p.x].jewelry;
 }
 
-void MapReal::setIsFloor(Pos p, bool isFloor) {
-    if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
+void Map::setIsFloor(Pos p, bool isFloor) {
+    if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].isFloor = isFloor;
 }
 
-void MapReal::addJewel(Pos p) {
-    if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
+void Map::addJewel(Pos p) {
+    if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].jewelry++;
 }
 
-void MapReal::gatherJewelry(Pos p) {
-    if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
+void Map::gatherJewelry(Pos p) {
+    if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].jewelry--;
 }
 
-void MapReal::addDirt(Pos p, double delta) {
-    if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
+void Map::addDirt(Pos p, double delta) {
+    if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].dirtLevel += delta;
@@ -54,22 +54,22 @@ void MapReal::addDirt(Pos p, double delta) {
     }
 }
 
-void MapReal::suckDirt(Pos p) {
-    if(p.x < 0 || p.x > int(width()) || p.y < 0 || p.y > int(height())){
+void Map::suckDirt(Pos p) {
+    if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].dirtLevel = 0;
 }
 
-unsigned int MapReal::width() const {
-    return m_cases.at(0).size() - 1;
+unsigned int Map::width() const {
+    return m_cases.at(0).size();
 }
 
-unsigned int MapReal::height() const {
-    return m_cases.size() - 1;
+unsigned int Map::height() const {
+    return m_cases.size();
 }
 
-void MapReal::update(double delta) {
+void Map::update(double delta) {
     std::random_device rd;
     std::default_random_engine mt(rd());
     std::uniform_int_distribution<int> random_event(0, 5);
@@ -97,7 +97,7 @@ void MapReal::update(double delta) {
     std::this_thread::sleep_for(delay);
 }
 
-std::ostream& operator<<(std::ostream& output, const MapReal& map) {
+std::ostream& operator<<(std::ostream& output, const Map& map) {
     if(map.m_cases.size() > 0) {
         output << "┏";
         for(unsigned int i = 0; i < map.m_cases[0].size(); i++) {

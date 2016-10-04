@@ -10,7 +10,7 @@
 #include "Pos.h"
 #include "SuckWithLevelStrategy.h"
 
-MapReal Loader::loadMap(const std::string& filename) {
+Map Loader::loadMap(const std::string& filename) {
     //Read the map file
     std::vector<std::vector<bool>> floor;
     size_t width = 0;
@@ -34,7 +34,7 @@ MapReal Loader::loadMap(const std::string& filename) {
     unsigned int height = floor.size();
 
     //Create the map
-    MapReal map(width, height);
+    Map map(width, height);
     for(unsigned int h = 0; h < height; h++) {
         for(unsigned int w = 0; w < width; w++) {
             if(floor[h].size() > w) {
@@ -52,7 +52,7 @@ MapReal Loader::loadMap(const std::string& filename) {
     return map;
 }
 
-Vacuum Loader::loadVacuum(const std::string& filename, MapReal& map) {
+Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
     std::ifstream file(filename);
     if(!file.is_open()) {
         throw std::string("Can't open file");

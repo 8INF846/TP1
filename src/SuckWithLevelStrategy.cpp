@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <random>
+#include <chrono>
 
 SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     //Add 1 case

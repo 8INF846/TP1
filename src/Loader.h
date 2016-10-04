@@ -3,17 +3,17 @@
 
 #include <string>
 
-#include "MapReal.h"
+#include "Map.h"
 #include "Vacuum.h"
 
 class Loader {
 public:
     /**
-    * Create the MapReal object from a file
+    * Create the Map object from a file
     * @param filename the path of the file
-    * @return the instance of the MapReal object
+    * @return the instance of the Map object
     */
-    static MapReal loadMap(const std::string& filename);
+    static Map loadMap(const std::string& filename);
 
     /**
     * Create the Vacuum object from a file
@@ -21,7 +21,7 @@ public:
     * @param map the map to test if the basePos is a real case
     * @return the instance of the Vacuum object
     */
-    static Vacuum loadVacuum(const std::string& filename, MapReal& map);
+    static Vacuum loadVacuum(const std::string& filename, Map& map);
 };
 
 

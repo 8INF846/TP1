@@ -1,79 +1,108 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "Startable.h"
-#include "Pos.h"
-#include "Case.h"
-#include <math.h>
+#include <ostream>
 #include <vector>
+#include <thread>
+
+#include "Case.h"
+#include "Pos.h"
+#include "Startable.h"
 
 class Map : public Startable {
 public:
+    /* CONSTRUCTORS */
+    Map() {};
+    Map(unsigned int width, unsigned int height);
+
+    /* ACCESSORS */
+    /**
+     * @param p the position to test
+     * @return wether there is floor at given position
+     */
+    bool isFloor(Pos p) const;
 
     /**
      * @param p the position to test
-     * @return if (p.x;p.y) is a floor
+     * @return the dirt level at given position
      */
-    virtual bool isFloor(Pos p) const = 0;
+    float dirtLevel(Pos p) const;
 
     /**
      * @param p the position to test
-     * @return dirtLevel at Pos p
+     * @return the jewelry count at given position
      */
-    virtual float dirtLevel(Pos p) const = 0;
-
-    /**
-     * @param p the position to test
-     * @return jewelry at pos p
-     */
-    virtual int jewelry(Pos p) const = 0;
+    int jewelry(Pos p) const;
 
     /**
      * @return the width of the map
      */
-    virtual unsigned int width() const = 0;
+    unsigned int width() const;
 
     /**
      * @return the height of the map
      */
-    virtual unsigned int height() const = 0;
+    unsigned int height() const;
+
+    /* MUTATORS */
+    /**
+     * Set wether or not there is floor at given position.
+     * @param p the position to set
+     * @param isFloor wether or not there is floor at given position
+     */
+    void setIsFloor(Pos p, bool isFloor);
 
     /**
-     * Change value of isFoor for case at pos p
-     * @param p
-     * @param isFloor
+     * Set dirt level at given position.
+     * @param p the position to set
+     * @param dirtLevel the amout of dirt at given position
      */
-    virtual void setIsFloor(Pos p, bool isFloor) = 0;
+    void setDirtLevel(Pos p, float dirtLevel);
 
     /**
-     * Add one jewel at pos p
-     * @param p
+     * Set jewelry count at given position.
+     * @param p the position to set
+     * @param jewelry the number of jewlery at given position
      */
-    virtual void addJewel(Pos p) = 0;
+    void setJewelry(Pos p, int jewelry);
 
     /**
-     * Remove jewel(s) at pos p
-     * @param p
+     * Add one jewelry at given position.
+     * @param p the position to update
      */
-    virtual void gatherJewelry(Pos p) = 0;
+    void addJewel(Pos p);
 
     /**
-     * Add delta dirtLevel at pos p
-     * @param p
-     * @param delta
+     * Remove one jewelry at given position.
+     * @param p the position to update
      */
-    virtual void addDirt(Pos p, double delta) = 0;
+    void gatherJewelry(Pos p);
 
     /**
-     * Remove dirl at pos p
-     * @param p
+     * Add dirt at given position (may be negative).
+     * @param p the position to update
+     * @param delta the amout of position to add/remove.
      */
-    virtual void suckDirt(Pos p) = 0;
+    void addDirt(Pos p, double delta);
 
     /**
-     * Update map
+     * Remove all dirt at given position.
+     * @param p the position to update
      */
-    virtual void update(double delta = 0) = 0;
+    void suckDirt(Pos p);
+
+    /**
+     * Print a map
+     */
+    friend std::ostream& operator<<(std::ostream& output, const Map& map);
+
+    /**
+     * Must be implemented since it inherits from Startable.
+     */
+    void update(double delta);
+
+private:
+    std::vector<std::vector<Case>> m_cases;
 };
 
 #endif

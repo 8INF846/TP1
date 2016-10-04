@@ -6,7 +6,7 @@
 #include "Sensors.h"
 
 /* Public constructors */
-Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, MapReal& map) :
+Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map) :
     m_dBattery(100.),
     m_position(basePosition),
     m_basePosition(basePosition),
@@ -18,6 +18,14 @@ Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, MapReal& m
 /* Public methods */
 bool Vacuum::isBusy() {
     return m_currentAction.timer > 0;
+}
+
+Pos Vacuum::position() const {
+    return m_position;
+}
+
+Pos Vacuum::basePosition() const {
+    return m_basePosition;
 }
 
 /* Private methods */

@@ -4,6 +4,7 @@
 #include "Strategy.h"
 #include "Action.h"
 #include "Pos.h"
+#include "Case.h"
 
 #include <deque>
 

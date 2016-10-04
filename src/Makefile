@@ -1,3 +1,5 @@
+.PHONY: tp1
+
 CC := g++
 CPP_FILES := $(wildcard *.cpp)
 H_FILES := $(wildcard *.h)
