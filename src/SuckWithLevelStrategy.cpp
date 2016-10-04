@@ -7,6 +7,8 @@ SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     //Add 1 case
     std::deque<Case> origin = std::deque<Case>(1);
     m_internalMap.push_back(origin);
+    m_basePos.x = 0;
+    m_basePos.y = 0;
 }
 
 Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
@@ -20,6 +22,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 
     auto scoreIddle = (m_currentPos == m_basePos) ?
     100.-sensors.battery : 0;
+    if(sensors.battery < 30) scoreIddle += std::pow(30-sensors.battery, 2);
     auto maxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
@@ -161,7 +164,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     }
 
     //If battery is low
-    unsigned int futureBattery = sensors.battery + std::abs(m_currentPos.x - m_basePos.x) + std::abs(m_currentPos.y - m_basePos.y);
+    unsigned int futureBattery = sensors.battery - std::abs(m_currentPos.x - m_basePos.x) - std::abs(m_currentPos.y - m_basePos.y);
     if(m_basePos.y < m_currentPos.y && sensors.north) {
         scoreMoveNorth += futureBattery < 30 ? std::pow(30-futureBattery, 2) : 0;
         if(scoreMoveNorth > maxScore || (scoreMoveNorth == maxScore && dist(mt) == 0)) {

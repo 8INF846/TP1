@@ -103,6 +103,11 @@ void Vacuum::executeCurrentAction(double delta) {
 void Vacuum::update(double delta) {
     // Récupérer les données des capteurs
 
+    if(batteryIsEmpty()) {
+        std::cout << "[Vacuum]BATTERY IS EMPTY. STOP!" << std::endl;
+        stop();
+    }
+
     auto delay = std::chrono::milliseconds(1000);
     std::cout << "[Vacuum]sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
     std::this_thread::sleep_for(delay);
