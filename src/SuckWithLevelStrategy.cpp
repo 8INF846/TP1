@@ -267,7 +267,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     std::cout << "ScoreNorth:" << scoreMoveNorth <<  std::endl;
     std::cout << "ScoreSouth:" << scoreMoveSouth <<  std::endl;
     std::cout << "ScoreWest:" << scoreMoveWest<<  std::endl;
-    std::cout << "ScoreWest:" << scoreMoveEast<<  std::endl;
+    std::cout << "ScoreEast:" << scoreMoveEast<<  std::endl;
     printInternalMap(oldestCasePos);
     return finalAction;
 }

@@ -45,8 +45,8 @@ int main(int argc, char* argv[]) {
 
     // Start rendering
     sf::RenderWindow window(
-            sf::VideoMode(100 * map.width(), 100 * map.height()),
-            "TP1 IA");
+    sf::VideoMode(100 * map.width(), 100 * map.height()),
+    "TP1 IA");
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(30);
 
@@ -84,11 +84,13 @@ int main(int argc, char* argv[]) {
         sf::Event event;
         while(window.pollEvent(event)) {
             switch(event.type) {
-                case sf::Event::Closed:
-                    window.close();
-                    break;
-                default:
-                    break;
+            case sf::Event::Closed:
+                window.close();
+                map.stop();
+                vacuum.stop();
+                break;
+            default:
+                break;
             }
         }
         window.clear(sf::Color(0,0,0,255));
@@ -101,9 +103,9 @@ int main(int argc, char* argv[]) {
                     float dirtLevel = map.dirtLevel(pos);
                     floor.setPosition(i * 100, j * 100);
                     floor.setFillColor(sf::Color(
-                                255 - 10 * dirtLevel,
-                                255 - 20 * dirtLevel,
-                                255 - 200 * dirtLevel));
+                    255 - 10 * dirtLevel,
+                    255 - 20 * dirtLevel,
+                    255 - 200 * dirtLevel));
                     window.draw(floor);
                     if(map.jewelry(pos) > 0) {
                         jewelrySprite.setPosition(pos.x * 100, pos.y * 100);
@@ -126,8 +128,6 @@ int main(int argc, char* argv[]) {
         window.display();
     }
 
-    map.stop();
-    vacuum.stop();
     threadMap.join();
     threadVacuum.join();
     return EXIT_SUCCESS;
