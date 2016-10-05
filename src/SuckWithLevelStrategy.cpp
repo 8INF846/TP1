@@ -9,6 +9,8 @@ SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     m_internalMap.push_back(origin);
     m_basePos.x = 0;
     m_basePos.y = 0;
+    m_previousPos.x = -1;
+    m_previousPos.y = -1;
 
     m_mt = std::mt19937(m_rd());
     m_dist = std::uniform_int_distribution<int>(0,1);
@@ -33,7 +35,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 
     auto scoreIddle = (m_currentPos == m_basePos) ?
     100.-sensors.battery : 0;
-    if(sensors.battery < 30) scoreIddle += std::pow(30-sensors.battery, 2);
+    if(sensors.battery < 30) scoreIddle += (m_currentPos == m_basePos) ? std::pow(30-sensors.battery, 2) : 0;
     m_fmaxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
@@ -74,13 +76,9 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     //Try to find another unvisited case
     //And get oldest and youngest visit
     time_t oldestVisit = 0;
-    time_t youngestVisit =  std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     Pos oldestCasePos;
     oldestCasePos.x=-1;
     oldestCasePos.y=-1;
-    Pos youngestCasePos;
-    youngestCasePos.x=-1;
-    youngestCasePos.y=-1;
     for(size_t h = 0; h < m_internalMap.size(); ++h) {
         for(size_t w = 0; w < m_internalMap[0].size(); ++w) {
             //Test if a case is not visited
@@ -110,38 +108,29 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
                     oldestCasePos.y = h;
                     oldestVisit = difftime;
                 }
-                if(difftime < youngestVisit) {
-                    Pos temp;
-                    temp.x = w;
-                    temp.y = h;
-                    if(!(temp == m_currentPos)) {
-                        youngestCasePos.x = w;
-                        youngestCasePos.y = h;
-                        youngestVisit = difftime;
-                    }
-                }
             }
         }
     }
 
     //Remove score to avoid the last case visited
-    if(youngestCasePos.x != -1 && youngestCasePos.y != -1) {
-        std::cout << m_currentPos << ":" << youngestCasePos << std::endl;
-        if(youngestCasePos.y < m_currentPos.y && sensors.north) {
+    if(m_previousPos.x != -1 && m_previousPos.y != -1) {
+        if(m_previousPos.y < m_currentPos.y && sensors.north) {
             scoreMoveNorth -= 10;
         }
 
-        if(youngestCasePos.y > m_currentPos.y && sensors.south) {
+        if(m_previousPos.y > m_currentPos.y && sensors.south) {
             scoreMoveSouth -= 10;
         }
 
-        if(youngestCasePos.x < m_currentPos.x && sensors.west) {
+        if(m_previousPos.x < m_currentPos.x && sensors.west) {
             scoreMoveWest -= 10;
         }
-        if(youngestCasePos.x > m_currentPos.x && sensors.east) {
+        if(m_previousPos.x > m_currentPos.x && sensors.east) {
             scoreMoveEast -= 10;
         }
     }
+    m_previousPos.x = m_currentPos.x;
+    m_previousPos.y = m_currentPos.y;
 
     //Add score if we want to visit the oldest case
     if(oldestCasePos.x != -1 && oldestCasePos.y != -1) {
@@ -221,7 +210,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     std::cout << "ScoreSouth:" << scoreMoveSouth <<  std::endl;
     std::cout << "ScoreWest:" << scoreMoveWest<<  std::endl;
     std::cout << "ScoreEast:" << scoreMoveEast<<  std::endl;
-    printInternalMap(youngestCasePos);
+    printInternalMap(oldestCasePos);
     return finalAction;
 }
 
@@ -277,7 +266,7 @@ void SuckWithLevelStrategy::printInternalMap(Pos oldest) {
                     std::cout << "   ";
                 }
             } else {
-                std::cout << "|==================|";
+                std::cout << "|==================";
             }
         }
         std::cout << std::endl;

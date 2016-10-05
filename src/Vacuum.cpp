@@ -6,12 +6,13 @@
 #include "Sensors.h"
 
 /* Public constructors */
-Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map) :
+Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map, unsigned int speed) :
     m_dBattery(100.),
     m_position(basePosition),
     m_basePosition(basePosition),
     m_strategy(std::move(strategy)),
-    m_map(&map)
+    m_map(&map),
+    m_uiSpeed(speed)
     {
 }
 
@@ -79,6 +80,7 @@ Action Vacuum::findNextAction(const Sensors& sensors) {
     default:
         action.timer = 0.1;
     }
+    action.timer /= m_uiSpeed;
     return action;
 }
 

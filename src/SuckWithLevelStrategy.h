@@ -52,6 +52,7 @@ private:
     std::random_device m_rd;
     std::mt19937 m_mt;
     std::uniform_int_distribution<int> m_dist;
+    Pos m_previousPos;
 };
 
 #endif

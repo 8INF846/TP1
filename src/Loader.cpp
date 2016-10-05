@@ -64,6 +64,7 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
     Pos basePos;
     basePos.x = -1;
     basePos.y = -1;
+    unsigned int speed = 1;
     while (std::getline(file, line))
     {
         const std::string s = line;
@@ -102,6 +103,15 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
                             current += pos[c];
                         }
                     }
+                } else if (param == "speed") {
+                    try {
+                        speed = std::stoi(value);
+                        if(speed < 1 || speed > 1000) speed = 1;
+                    } catch(const std::exception& e) {
+                        std::cerr << e.what() << std::endl;
+                        speed = 1;
+                    }
+                    map.setSpeed(speed);
                 }
             }
         }
@@ -115,5 +125,5 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
         throw std::string("Can't set basePos for Vacuum");
     }
 
-    return Vacuum(strategy, basePos, map);
+    return Vacuum(strategy, basePos, map, speed);
 }

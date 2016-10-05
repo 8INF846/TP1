@@ -5,7 +5,7 @@
 #include <random>
 #include <exception>
 
-Map::Map(unsigned int width, unsigned int height) : m_cases(height, std::vector<Case>(width))
+Map::Map(unsigned int width, unsigned int height) : m_cases(height, std::vector<Case>(width)), m_uiSpeed(1)
 {}
 
 bool Map::isFloor(Pos p) const {
@@ -81,7 +81,7 @@ void Map::update(double delta) {
     std::random_device rd;
     std::default_random_engine mt(rd());
     std::uniform_int_distribution<int> random_event(0, 5);
-    std::uniform_int_distribution<int> random_ms(10, 1000);
+    std::uniform_int_distribution<int> random_ms(100, 2000);
     //Modify map
     std::uniform_int_distribution<int> random_height(0, m_cases.size()-1);
     auto h = random_height(mt);
@@ -101,6 +101,7 @@ void Map::update(double delta) {
     }
     //Sleep
     auto delay = std::chrono::milliseconds(random_ms(mt));
+    delay /= m_uiSpeed;
     std::cout << "sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
     std::this_thread::sleep_for(delay);
 }

@@ -16,7 +16,7 @@ class Vacuum : public Startable {
 public:
     /* Constructors */
     Vacuum() {}
-    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map);
+    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map, unsigned int speed = 1);
 
     /* Methods */
     bool isBusy();
@@ -39,6 +39,7 @@ private:
     std::unique_ptr<Strategy> m_strategy;
     Action m_currentAction;
     Map* m_map;
+    unsigned int m_uiSpeed;
 };
 
 #endif
