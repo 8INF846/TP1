@@ -3,17 +3,17 @@
 #include <iostream>
 
 #include "Vacuum.h"
+#include "Settings.h"
 #include "Sensors.h"
+#include "Console.h"
 
 /* Public constructors */
-Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map, unsigned int speed) :
+Vacuum::Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map) :
     m_dBattery(100.),
     m_position(basePosition),
     m_basePosition(basePosition),
     m_strategy(std::move(strategy)),
-    m_map(&map),
-    m_uiSpeed(speed)
-    {
+    m_map(&map) {
 }
 
 /* Public methods */
@@ -56,6 +56,14 @@ Sensors Vacuum::observe() const {
     // Charging
     sensors.charging = m_position == m_basePosition;
 
+    // Logger les données sensibles du robot
+    std::ostream& out = Console::out(1);
+    out << "Position : " << m_position << std::endl << "Batterie : [";
+    int k;
+    for(k = 2; k < (int)m_dBattery; k+=2) out << "=";
+    for(; k < 100; k+=2) out << " ";
+    out << "]" << std::endl;
+
     return sensors;
 }
 
@@ -80,13 +88,18 @@ Action Vacuum::findNextAction(const Sensors& sensors) {
     default:
         action.timer = 0.1;
     }
-    action.timer /= m_uiSpeed;
+
+    // Logger l'action choisie
+    std::ostream& out = Console::out(1);
+    out << "Action : " << action << std::endl;
+
     return action;
 }
 
 void Vacuum::execute(Action action) {
     // Patienter le temps de l'exécution de l'action
-    auto delay = std::chrono::milliseconds(int(action.timer * 1000));
+    auto delay = std::chrono::milliseconds(int(action.timer * 1000
+                / Settings::WORLD_SPEED));
     std::this_thread::sleep_for(delay);
 
     // Calculer les répercusions de l'action
@@ -94,49 +107,46 @@ void Vacuum::execute(Action action) {
     case GoNorth:
         m_dBattery -= 1;
         m_position.y -= 1;
-        std::cout << "[VACUUM]GONORTH" << m_position << std::endl;
         break;
     case GoSouth:
         m_dBattery -= 1;
         m_position.y += 1;
-        std::cout << "[VACUUM]GOSOUTH" << m_position << std::endl;
         break;
     case GoEast:
         m_dBattery -= 1;
         m_position.x += 1;
-        std::cout << "[VACUUM]GOEAST" << m_position << std::endl;
         break;
     case GoWest:
         m_dBattery -= 1;
         m_position.x -= 1;
-        std::cout << "[VACUUM]GOWEST" << m_position << std::endl;
         break;
     case Gather:
         m_dBattery -= 1.2;
-        std::cout << "[VACUUM]GATHER" << m_position << std::endl;
         m_map->gatherJewelry(m_position);
         break;
     case Suck:
         m_dBattery -= action.timer;
         m_map->suckDirt(m_position, 15 * action.timer);
-        std::cout << "[VACUUM]SUCKDIRT" << m_position << std::endl;
         break;
     case Iddle:
-        std::cout << "[VACUUM]IDDLE" << m_position << std::endl;
         if(m_position == m_basePosition) {
             m_dBattery = 100.0;
         }
         break;
     default:
-        std::cout << action.type << "##" << std::endl;
         break;
     }
 }
 
 void Vacuum::update(double delta) {
+    // Logger le nouveau tour dans la boucle logique du robot-aspirateur
+    std::ostream& out = Console::out(1);
+    out << std::endl << "---" << std::endl << std::endl;
+
     // Si batterie vide l'aspirateur s'arrête
     if(batteryIsEmpty()) {
-        std::cout << "[Vacuum]BATTERY IS EMPTY. STOP!" << std::endl;
+        out << "[ERROR] Battery is empty. Stop !" << std::endl;
+        out << "[ERROR] Wait until a friendly human plugs me..." << std::endl;
         stop();
     }
 

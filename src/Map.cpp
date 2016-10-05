@@ -1,11 +1,13 @@
 #include "Map.h"
+#include "Settings.h"
+#include "Console.h"
 
 #include <iostream>
 #include <chrono>
 #include <random>
 #include <exception>
 
-Map::Map(unsigned int width, unsigned int height) : m_cases(height, std::vector<Case>(width)), m_uiSpeed(1) {}
+Map::Map(unsigned int width, unsigned int height) : m_cases(height, std::vector<Case>(width)) {}
 
 bool Map::isFloor(Pos p) const {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
@@ -24,7 +26,6 @@ int Map::jewelry(Pos p) const {
 
 void Map::setIsFloor(Pos p, bool isFloor) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
-        std::cout << "ERROR out of map !";
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].isFloor = isFloor;
@@ -32,7 +33,6 @@ void Map::setIsFloor(Pos p, bool isFloor) {
 
 void Map::addJewelry(Pos p) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
-        std::cout << "ERROR out of map !";
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].jewelry++;
@@ -40,7 +40,6 @@ void Map::addJewelry(Pos p) {
 
 void Map::gatherJewelry(Pos p) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
-        std::cout << "ERROR out of map !";
         throw std::string("Position out of map cannot be changed");
     }
     if(m_cases[p.y][p.x].jewelry > 0) {
@@ -50,7 +49,6 @@ void Map::gatherJewelry(Pos p) {
 
 void Map::addDirt(Pos p, double delta) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
-        std::cout << "ERROR out of map !";
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].dirtLevel += delta;
@@ -64,12 +62,16 @@ void Map::addDirt(Pos p, double delta) {
 
 void Map::suckDirt(Pos p, double delta) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
-        std::cout << "ERROR out of map !";
         throw std::string("Position out of map cannot be changed");
     }
     m_cases[p.y][p.x].dirtLevel -= delta;
     if(m_cases[p.y][p.x].dirtLevel < 0) {
         m_cases[p.y][p.x].dirtLevel = 0;
+    }
+    if(m_cases[p.y][p.x].jewelry > 0) {
+        std::ostream& out = Console::out(1);
+        out << "[ERROR] Jewelry sucked !" << std::endl;
+        out << "[ERROR] Friendly human is not gonna be happy..." << std::endl;
     }
 }
 
@@ -95,19 +97,15 @@ void Map::update(double delta) {
     currentPos.x = w;
     currentPos.y = h;
     if(random_event(mt) == 1) {
-        std::cout << "Add jewel at pos (" << h << ";" << w << ")" << std::endl;
         addJewelry(currentPos);
     } else {
         if(m_cases[h][w].dirtLevel < 1.0) {
-            std::cout << "Add dirt at pos (" << h << ";" << w << ")" << std::endl;
             addDirt(currentPos, 0.1);
         }
     }
     //Sleep
     auto delay = std::chrono::milliseconds(random_ms(mt));
-    delay /= m_uiSpeed;
-    std::cout << "sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
-    std::this_thread::sleep_for(delay);
+    std::this_thread::sleep_for(delay / Settings::WORLD_SPEED);
 }
 
 std::ostream& operator<<(std::ostream& output, const Map& map) {

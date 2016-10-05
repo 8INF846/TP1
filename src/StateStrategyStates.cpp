@@ -1,30 +1,40 @@
 #include "StateStrategyStates.h"
 #include <iostream>
+#include "Console.h"
 
 Action GoToLatestVisitedCaseState::execute(StateStrategy* str) {
-    std::cout << "[STATE] Go to latest visited case" << std::endl;
+    std::ostream& out = Console::out(2);
+    out << "State : GoToLatestVisitedCase" << std::endl;
+    std::ostream& out4 = Console::out(4);
+
     // Si batterie faible, rejoindre la base
     if(str->smartBatteryLevel() <= 2 * MOVEMENT_BATTERY_COST) {
+        out4 << "<battery low>";
         str->setState(GoToBaseAndChargeBatteryState::getInstance());
         return Action();
     }
     // Si des bijoux sur la case courante, les ramasser
     if(str->jewelry() > 0) {
+        out4 << "<jewelry>";
         str->setState(GatherJewelryState::getInstance());
         return Action();
     }
     // Si de la saleté sur la case courante, l'aspirer
-    if(str->dirtLevel() >= MIN_DIRT_LEVEL_TO_SUCK) {
+    if(str->dirtLevel() >= double(0.1)) {
+        out4 << "<dirt>";
         str->setState(SuckDirtState::getInstance());
         return Action();
     }
+    out4 << "<move>";
     ActionType direction = str->actionTypeToLatestVisitedCase();
     str->go(direction);
     return Action(direction);
 }
 
 Action GoToBaseAndChargeBatteryState::execute(StateStrategy* str) {
-    std::cout << "[STATE] Go to base and charge battery" << std::endl;
+    std::ostream& out = Console::out(2);
+    out << "State : GoToBaseAndChargeBattery" << std::endl;
+
     // Si la batterie est pleine
     if(str->batteryFull()) {
         str->setState(GoToLatestVisitedCaseState::getInstance());
@@ -39,7 +49,9 @@ Action GoToBaseAndChargeBatteryState::execute(StateStrategy* str) {
 }
 
 Action GatherJewelryState::execute(StateStrategy* str) {
-    std::cout << "[STATE] Gather jewelry" << std::endl;
+    std::ostream& out = Console::out(2);
+    out << "State : GatherJewelry" << std::endl;
+
     if(str->jewelry() == 0) {
         str->setState(GoToLatestVisitedCaseState::getInstance());
         return Action();
@@ -52,7 +64,9 @@ Action GatherJewelryState::execute(StateStrategy* str) {
 }
 
 Action SuckDirtState::execute(StateStrategy* str) {
-    std::cout << "[STATE] Suck dirt" << std::endl;
+    std::ostream& out = Console::out(2);
+    out << "State : SuckDirt" << std::endl;
+
     if(str->smartBatteryLevel() <= 0) {
         str->setState(GoToBaseAndChargeBatteryState::getInstance());
         return Action();

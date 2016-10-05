@@ -3,19 +3,20 @@
 #include <chrono>
 #include <iostream>
 #include <sstream>
+#include <thread>
 #include <string>
 #include <ctime>
+#include "Console.h"
 
 StateStrategy::StateStrategy(): m_position(0, 0), m_basePosition(0, 0) {
     m_state = GoToBaseAndChargeBatteryState::getInstance();
 
     std::deque<StrCase> firstColumn;
-    firstColumn.emplace_back(true);
+    firstColumn.push_back(StrCase(true, true));
     m_map.push_back(firstColumn);
 }
 
 Action StateStrategy::findNextAction(const Sensors& sensors) {
-    for(int k = 0; k < 32; k++) std::cout << "="; std::cout << std::endl;
     // Mise à jour de la carte interne de la stratégie
     updateInternalMap(sensors);
     displayInternalMap();
@@ -28,7 +29,6 @@ Action StateStrategy::findNextAction(const Sensors& sensors) {
     while(action.type == None) {
         action = m_state->execute(this);
     }
-    std::cout << action << std::endl;
     return action;
 }
 
@@ -56,23 +56,33 @@ void StateStrategy::go(ActionType direction) {
 }
 
 bool StateStrategy::batteryFull() const {
+    std::ostream& out = Console::out(4);
+    out << "<batteryFull?>" << std::endl;
     return m_battery > 99.9;
 }
 
 double StateStrategy::batteryLevel() const {
+    std::ostream& out = Console::out(4);
+    out << "<battery?>" << std::endl;
     return m_battery;
 }
 
 double StateStrategy::smartBatteryLevel() {
+    std::ostream& out = Console::out(4);
+    out << "<batterySmart?>" << std::endl;
     auto path = pathTo(m_basePosition);
     return m_battery - 2 - 1 * path.size();
 }
 
 int StateStrategy::jewelry() const {
+    std::ostream& out = Console::out(4);
+    out << "<jewelry?>" << std::endl;
     return m_map[m_position.y][m_position.x].jewelry;
 }
 
 double StateStrategy::dirtLevel() const {
+    std::ostream& out = Console::out(4);
+    out << "<dirt?>" << std::endl;
     return m_map[m_position.y][m_position.x].dirtLevel;
 }
 
@@ -81,14 +91,12 @@ bool StateStrategy::isOnBase() const {
 }
 
 ActionType StateStrategy::actionTypeToBase() {
-    std::cout << "==== Debug> trying to go to base at " << m_basePosition << std::endl;
     auto path = pathTo(m_basePosition);
     return path[0];
 }
 
 ActionType StateStrategy::actionTypeToLatestVisitedCase() {
     auto p = positionOfLatestVisitedCase();
-    std::cout << "==== Debug> trying to go to " << p << std::endl;
     auto path = pathTo(p);
     return path[0];
 }
@@ -109,7 +117,6 @@ Pos StateStrategy::positionOfLatestVisitedCase() const {
     Pos position;
     for(unsigned int y = 0; y < m_map.size(); y++) {
         for(unsigned int x = 0; x < m_map[0].size(); x++) {
-            std::cout << m_map[y][x];
             auto lastVisit = m_map[y][x].lastVisit;
             Pos pos(x, y);
             double dist = distanceTo(pos);
@@ -119,7 +126,6 @@ Pos StateStrategy::positionOfLatestVisitedCase() const {
                 minDist = dist;
             }
         }
-        std::cout << std::endl;
     }
     return position;
 }
@@ -163,10 +169,10 @@ std::vector<Pos> findNeighbors(Pos pos, std::deque<std::deque<StrCase>>& map, st
 }
 
 std::vector<ActionType> StateStrategy::constructPath(Pos target, Pos source) {
+    std::ostream& out = Console::out(4);
     std::deque<Pos> posPath;
     posPath.push_back(target);
     Pos current = target;
-    displayInternalMap();
     std::vector<Pos> fakeClosedSet;
     while(current != source) {
         current = m_map[current.y][current.x].cameFrom;
@@ -192,19 +198,19 @@ std::vector<ActionType> StateStrategy::constructPath(Pos target, Pos source) {
         last = it;
         it++;
     }
-    for(int k = 0; k < path.size(); k++) {
-        std::cout << "Debug> w-" << path[k] << std::endl;
-    }
+    out << "5";
     return path;
 }
 
 std::vector<ActionType> StateStrategy::pathTo(const Pos& target) {
-    Pos source = m_position;
-    std::cout << "Debug>" << source << "->" << target << std::endl;
-    std::vector<ActionType> path;
+    /* This algorithm is an implementation of A* following the pseudo-code
+     * described on wikipedia's page "A* algorithm"
+     */
+    std::ostream& out = Console::out(4);
+    out << "0";
 
-    // A*
-    // Reset marks on map
+    Pos source = m_position;
+    std::vector<ActionType> path;
     for(unsigned int y = 0; y < m_map.size(); y++) {
         for(unsigned int x = 0; x < m_map[0].size(); x++) {
             Pos p(x, y);
@@ -220,19 +226,19 @@ std::vector<ActionType> StateStrategy::pathTo(const Pos& target) {
     std::vector<Pos> closedSet;
 
     while(openSet.size() != 0) {
+        out << "1";
         // Pos with lowest fScore in openSet
         auto currentIt = openSet.begin();
         for(auto it = openSet.begin(); it != openSet.end(); it++) {
-            std::cout << "Debug> searching current " << *it << " " << m_map[it->y][it->x].fScore << std::endl;
             if(m_map[it->y][it->x].fScore <
                     m_map[currentIt->y][currentIt->x].fScore) {
                 currentIt = it;
             }
         }
-        std::cout << "Debug> found current " << *currentIt << std::endl;
         Pos current = *currentIt;
         // Arrived at goal
         if(current == target) {
+            out << "2";
             return constructPath(current, source);
         }
         // Remove current node from openSet
@@ -240,7 +246,6 @@ std::vector<ActionType> StateStrategy::pathTo(const Pos& target) {
         closedSet.push_back(current);
         // Find neighbors not in closedSet
         std::vector<Pos> neighbors = findNeighbors(current, m_map, closedSet);
-        std::cout << "Debug> Neighbors : " << neighbors.size() << std::endl;
         for(auto it = neighbors.begin(); it != neighbors.end(); it++) {
             auto t_gScore = m_map[current.y][current.x].gScore + distance(current, *it);
             if(!isInSet(*it, openSet)) {
@@ -257,16 +262,12 @@ std::vector<ActionType> StateStrategy::pathTo(const Pos& target) {
 }
 
 void StateStrategy::displayInternalMap() {
+    std::ostream& out = Console::out(3);
     for(unsigned int y = 0; y < m_map.size(); y++) {
         for(unsigned int x = 0; x < m_map[0].size(); x++) {
-            if(!m_map[y][x].status) {
-                std::cout << "?(/) ";
-            }
-            else {
-                std::cout << (m_map[y][x].isFloor ? std::to_string(m_map[y][x].lastVisit) : "#") << "(" << m_map[y][x].cameFrom << ") ";
-            }
+            out << m_map[y][x];
         }
-        std::cout << std::endl;
+        out << std::endl;
     }
 }
 

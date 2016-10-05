@@ -10,6 +10,7 @@
 #include "Pos.h"
 #include "SuckWithLevelStrategy.h"
 #include "StateStrategy.h"
+#include "Settings.h"
 
 Map Loader::loadMap(const std::string& filename) {
     //Read the map file
@@ -65,7 +66,6 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
     Pos basePos;
     basePos.x = -1;
     basePos.y = -1;
-    unsigned int speed = 1;
     while (std::getline(file, line))
     {
         const std::string s = line;
@@ -109,6 +109,7 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
                         }
                     }
                 } else if (param == "speed") {
+                    unsigned int speed;
                     try {
                         speed = std::stoi(value);
                         if(speed < 1 || speed > 1000) speed = 1;
@@ -116,7 +117,17 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
                         std::cerr << e.what() << std::endl;
                         speed = 1;
                     }
-                    map.setSpeed(speed);
+                    Settings::WORLD_SPEED = speed;
+                } else if (param == "log") {
+                    unsigned int log;
+                    try {
+                        log = std::stoi(value);
+                        if(log < 0) log = 0;
+                    } catch(const std::exception& e) {
+                        std::cerr << e.what() << std::endl;
+                        log = 0;
+                    }
+                    Settings::LOG_LEVEL = log;
                 }
             }
         }
@@ -130,5 +141,5 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
         throw std::string("Can't set basePos for Vacuum");
     }
 
-    return Vacuum(strategy, basePos, map, speed);
+    return Vacuum(strategy, basePos, map);
 }

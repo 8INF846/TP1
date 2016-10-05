@@ -14,7 +14,7 @@ struct StrCase : public Case {
     bool status;
 
     StrCase(bool isFloor = false, bool status = false);
-    StrCase(bool isFloor, float dirtLevel, int jewelry, time_t lastVisit);
+    StrCase(bool isFloor, double dirtLevel, int jewelry, time_t lastVisit);
     friend std::ostream& operator<<(std::ostream& output, const StrCase& strCase);
 };
 

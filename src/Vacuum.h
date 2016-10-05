@@ -16,16 +16,13 @@ class Vacuum : public Startable {
 public:
     /* Constructors */
     Vacuum() {}
-    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map, unsigned int speed = 1);
+    Vacuum(std::unique_ptr<Strategy>& strategy, Pos basePosition, Map& map);
 
     /* Methods */
     bool isBusy();
     bool batteryIsEmpty();
     Pos position() const;
     Pos basePosition() const;
-
-    void setSpeed(unsigned int speed) { m_uiSpeed = speed; }
-    unsigned int getSpeed() { return m_uiSpeed; }
 
 private:
     /* Methods */
@@ -38,11 +35,9 @@ private:
     double m_dBattery;
     Pos m_position;
     Pos m_basePosition;
-    bool m_bShouldStop;
     std::unique_ptr<Strategy> m_strategy;
     Action m_currentAction;
     Map* m_map;
-    unsigned int m_uiSpeed;
 };
 
 #endif

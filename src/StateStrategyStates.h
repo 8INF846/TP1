@@ -24,7 +24,6 @@ class SuckDirtState;
  */
 class GoToLatestVisitedCaseState : public State {
 public:
-    float minDirtLevel = 0.2;
     static GoToLatestVisitedCaseState* getInstance() {
         static GoToLatestVisitedCaseState instance;
         return &instance;

@@ -5,6 +5,8 @@
 # Strategy for the agent
 # {SuckWithLevel}
 # {State}
-strategy=SuckWithLevel
+strategy=State
 base=0;0
-speed=1
+# 0 = nothing, 1 = Choosed Action + Status, 2 = 1 + States process, 3 = 2 + internal map
+log=4
+speed=100

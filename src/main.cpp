@@ -9,6 +9,7 @@
 #include "Pos.h"
 #include "Loader.h"
 #include "Startable.h"
+#include "Settings.h"
 
 void help() {
     std::cout << "Utilisation : vacuum [map_file_name] [vacuum_file_name]" << std::endl;
@@ -91,15 +92,13 @@ int main(int argc, char* argv[]) {
                 break;
             case sf::Event::KeyPressed:
                 if (event.key.code == sf::Keyboard::P) {
-                    if(vacuum.getSpeed() * 2 < 1000) {
-                        vacuum.setSpeed(vacuum.getSpeed() + 10);
-                        map.setSpeed(map.getSpeed() + 10);
+                    if(Settings::WORLD_SPEED < 500) {
+                        Settings::WORLD_SPEED += 10;
                     }
                 }
                 if (event.key.code == sf::Keyboard::M) {
-                    if(vacuum.getSpeed() > 10) {
-                        vacuum.setSpeed(vacuum.getSpeed() - 10);
-                        map.setSpeed(map.getSpeed() - 10);
+                    if(Settings::WORLD_SPEED > 10) {
+                        Settings::WORLD_SPEED -= 10;
                     }
                 }
                 break;
