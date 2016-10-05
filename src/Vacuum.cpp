@@ -58,98 +58,90 @@ Sensors Vacuum::observe() const {
     return sensors;
 }
 
-void Vacuum::findNextAction(const Sensors& sensors) {
-    m_currentAction = m_strategy->findNextAction(sensors);
-    // Ensure timer is correctly set
-    switch(m_currentAction.type) {
+Action Vacuum::findNextAction(const Sensors& sensors) {
+    // Demander à la stratégie l'action à réaliser
+    Action action = m_strategy->findNextAction(sensors);
+
+    // S'assurer de la cohérence de l'action donnée
+    switch(action.type) {
     case GoNorth:
     case GoSouth:
     case GoEast:
     case GoWest:
-        m_currentAction.timer = 1;
+        action.timer = 1;
         break;
     case Gather:
-        m_currentAction.timer = 3;
+        action.timer = 3;
+    case Suck:
+    case Iddle:
+        action.timer = std::max(0.1, action.timer);
+        break;
+    default:
+        action.timer = 0.1;
+    }
+    return action;
+}
+
+void Vacuum::execute(Action action) {
+    // Patienter le temps de l'exécution de l'action
+    auto delay = std::chrono::milliseconds(int(action.timer * 1000));
+    std::this_thread::sleep_for(delay);
+
+    // Calculer les répercusions de l'action
+    switch(action.type) {
+    case GoNorth:
+        m_dBattery -= 1;
+        m_position.y -= 1;
+        std::cout << "[VACUUM]GONORTH" << m_position << std::endl;
+        break;
+    case GoSouth:
+        m_dBattery -= 1;
+        m_position.y += 1;
+        std::cout << "[VACUUM]GOSOUTH" << m_position << std::endl;
+        break;
+    case GoEast:
+        m_dBattery -= 1;
+        m_position.x += 1;
+        std::cout << "[VACUUM]GOEAST" << m_position << std::endl;
+        break;
+    case GoWest:
+        m_dBattery -= 1;
+        m_position.x -= 1;
+        std::cout << "[VACUUM]GOWEST" << m_position << std::endl;
+        break;
+    case Gather:
+        m_dBattery -= 1.4;
+        std::cout << "[VACUUM]GATHER" << m_position << std::endl;
+        m_map->gatherJewelry(m_position);
+        break;
+    case Suck:
+        m_dBattery -= action.timer;
+        m_map->addDirt(m_position, - 15 * action.timer);
+        std::cout << "[VACUUM]SUCKDIRT" << m_position << std::endl;
+        break;
+    case Iddle:
+        std::cout << "[VACUUM]IDDLE" << m_position << std::endl;
+        break;
     default:
         break;
     }
 }
 
-void Vacuum::executeCurrentAction(double delta) {
-    m_currentAction.timer -= delta;
-
-    // A chaque appel
-    if(m_currentAction.type == Suck) {
-        m_dBattery -= delta;
-        m_map->addDirt(m_position, - 1.5 * delta);
-    }
-    else if(m_currentAction.type == Iddle) {
-        if(m_position == m_basePosition) {
-            m_dBattery = std::min(m_dBattery + delta * 2, 100.);
-        }
-    }
-    // Lorsque l'action est terminée
-    if(m_currentAction.timer <= 0) {
-        switch(m_currentAction.type) {
-        case GoNorth:
-            m_dBattery -= 1.;
-            m_position.y -= 1;
-            std::cout << "[VACUUM]GONORTH" << m_position << std::endl;
-            break;
-        case GoSouth:
-            m_dBattery -= 1.;
-            m_position.y += 1;
-            std::cout << "[VACUUM]GOSOUTH" << m_position << std::endl;
-            break;
-        case GoEast:
-            m_dBattery -= 1.;
-            m_position.x += 1;
-            std::cout << "[VACUUM]GOEAST" << m_position << std::endl;
-            break;
-        case GoWest:
-            m_dBattery -= 1.;
-            m_position.x -= 1;
-            std::cout << "[VACUUM]GOWEST" << m_position << std::endl;
-            break;
-        case Gather:
-            m_dBattery -= 1.4;
-            std::cout << "[VACUUM]GATHER" << m_position << std::endl;
-            m_map->gatherJewelry(m_position);
-            break;
-        case Suck:
-            std::cout << "[VACUUM]SUCKDIRT" << m_position << std::endl;
-            break;
-        case Iddle:
-            std::cout << "[VACUUM]IDDLE" << m_position << std::endl;
-            break;
-        default:
-            break;
-        }
-        m_currentAction.type = Iddle;
-    }
-}
-
 void Vacuum::update(double delta) {
     // Récupérer les données des capteurs
-
     if(batteryIsEmpty()) {
         std::cout << "[Vacuum]BATTERY IS EMPTY. STOP!" << std::endl;
         stop();
     }
 
-
-    /*
-    auto delay = std::chrono::milliseconds(1000);
-    std::cout << "[Vacuum]sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
-    std::this_thread::sleep_for(delay);
-    */
+    // Observer l'environnement
     Sensors sensors = observe();
 
-    // Executer une action
-    if(!isBusy()) {
-        findNextAction(sensors);
-    }
-    executeCurrentAction(delta);
+    // Trouver l'action à exécuter
+    Action action = findNextAction(sensors);
+
+    // Exécuter l'action choisie
+    execute(action);
 }
 
 bool Vacuum::batteryIsEmpty() {

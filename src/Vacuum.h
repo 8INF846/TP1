@@ -28,8 +28,8 @@ private:
     /* Methods */
     void update(double delta);
     Sensors observe() const;
-    void findNextAction(const Sensors& sensors);
-    void executeCurrentAction(double delta);
+    Action findNextAction(const Sensors& sensors);
+    void execute(Action action);
 
     /* Attributes */
     double m_dBattery;
