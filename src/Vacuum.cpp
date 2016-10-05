@@ -151,5 +151,5 @@ void Vacuum::update(double delta) {
 }
 
 bool Vacuum::batteryIsEmpty() {
-    return m_dBattery == 0;
+    return m_dBattery <= 0;
 }
