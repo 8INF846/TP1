@@ -60,11 +60,35 @@ Sensors Vacuum::observe() const {
 
 void Vacuum::findNextAction(const Sensors& sensors) {
     m_currentAction = m_strategy->findNextAction(sensors);
+    // Ensure timer is correctly set
+    switch(m_currentAction.type) {
+    case GoNorth:
+    case GoSouth:
+    case GoEast:
+    case GoWest:
+        m_currentAction.timer = 1;
+        break;
+    case Gather:
+        m_currentAction.timer = 3;
+    default:
+        break;
+    }
 }
 
 void Vacuum::executeCurrentAction(double delta) {
     m_currentAction.timer -= delta;
 
+    // A chaque appel
+    if(m_currentAction.type == Suck) {
+        m_dBattery -= delta;
+        m_map->addDirt(m_position, - 1.5 * delta);
+    }
+    else if(m_currentAction.type == Iddle) {
+        if(m_position == m_basePosition) {
+            m_dBattery = std::min(m_dBattery + delta * 2, 100.);
+        }
+    }
+    // Lorsque l'action est terminée
     if(m_currentAction.timer <= 0) {
         switch(m_currentAction.type) {
         case GoNorth:
@@ -88,18 +112,15 @@ void Vacuum::executeCurrentAction(double delta) {
             std::cout << "[VACUUM]GOWEST" << m_position << std::endl;
             break;
         case Gather:
-            m_dBattery -= 1.;
+            m_dBattery -= 1.4;
             std::cout << "[VACUUM]GATHER" << m_position << std::endl;
             m_map->gatherJewelry(m_position);
             break;
         case Suck:
-            m_dBattery -= 1.;
             std::cout << "[VACUUM]SUCKDIRT" << m_position << std::endl;
-            m_map->suckDirt(m_position);
             break;
         case Iddle:
             std::cout << "[VACUUM]IDDLE" << m_position << std::endl;
-            if(m_position == m_basePosition) m_dBattery = 100.;
             break;
         default:
             break;
@@ -116,10 +137,12 @@ void Vacuum::update(double delta) {
         stop();
     }
 
-    auto delay = std::chrono::milliseconds(100);
+
+    /*
+    auto delay = std::chrono::milliseconds(1000);
     std::cout << "[Vacuum]sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
     std::this_thread::sleep_for(delay);
-
+    */
     Sensors sensors = observe();
 
     // Executer une action
