@@ -28,7 +28,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
     scoreSuck += 60*sensors.dirt;
-    if(sensors.dirt > 0.2) scoreSuck += 150*sensors.dirt;
+    if(sensors.dirt > 0.2) scoreSuck += 200*sensors.dirt;
     scoreSuck -= 200*sensors.jewelry; //If jewelry on the case
     scoreSuck -= sensors.battery < 30 ? std::pow(30-sensors.battery, 2) : 0;
     if(scoreSuck > maxScore || (scoreSuck == maxScore && dist(mt) == 0)) {

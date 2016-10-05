@@ -71,7 +71,7 @@ Action Vacuum::findNextAction(const Sensors& sensors) {
         action.timer = 1;
         break;
     case Gather:
-        action.timer = 3;
+        action.timer = 1.2;
     case Suck:
     case Iddle:
         action.timer = std::max(0.1, action.timer);
@@ -110,7 +110,7 @@ void Vacuum::execute(Action action) {
         std::cout << "[VACUUM]GOWEST" << m_position << std::endl;
         break;
     case Gather:
-        m_dBattery -= 1.4;
+        m_dBattery -= 1.2;
         std::cout << "[VACUUM]GATHER" << m_position << std::endl;
         m_map->gatherJewelry(m_position);
         break;
@@ -121,6 +121,9 @@ void Vacuum::execute(Action action) {
         break;
     case Iddle:
         std::cout << "[VACUUM]IDDLE" << m_position << std::endl;
+        if(m_position == m_basePosition) {
+            m_dBattery = 100.0;
+        }
         break;
     default:
         break;
