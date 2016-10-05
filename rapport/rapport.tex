@@ -56,7 +56,7 @@ Le fichier possède 2 fichiers de configuration. Le premier décrit la carte dan
 11100
 \end{minted}
 
-Le second fichier configure l'agent. On peut lui donner le nom de la stratégie souhaitée (pour le moment une seule stratégie est implémentée) ainsi que sa position de base dans la carte~:
+Le second fichier configure l'agent. On peut lui donner le nom de la stratégie souhaitée (pour le moment deux stratégies ont été implémentées, SuckWithLevel et State) ainsi que sa position de base dans la carte~:
 
 \begin{minted}{python}
 ###############################################################################
@@ -65,8 +65,12 @@ Le second fichier configure l'agent. On peut lui donner le nom de la stratégie 
 
 # Strategy for the agent
 # {SuckWithLevel}
-strategy=SuckWithLevel
+# {State}
+strategy=State
+# Correspond à la case d'origine
 base=0;0
+# Multiplicateur de vitesse du programme
+speed=10
 \end{minted}
 
 Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
@@ -74,14 +78,22 @@ Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
 ./agentTP1 map vacuum
 \end{verbatim}
 
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[scale=0.4]{execution}
+		\caption{Le programme en cours d'exécution}
+		\label{fig:Execution}
+	\end{center}
+\end{figure}
+
 \section{Structure du programme}
 \subsection{Structure générale}
 Comme demandé dans le sujet, notre programme s'exécute sur deux threads. Le premier thread réalise toute la gestion de la carte en créant de la poussière et des bijoux. Le second thread correspond à l'agent en observant l'environnement visible, puis donne le résultat à une stratégie qui en déduit la prochaine action et l'agent l'exécute.
 
 Les fichiers intéressants pour la création et le lancement des threads sont \emph{main.cpp}, \emph{Loader.*} et \emph{Startable.*}.
 \subsection{L'environnement}
-L'interface de cette partie est présente dans le fichier \emph{Map.h} et est implémentée dans \emph{MapReal.*}. La carte est représentée par un vecteur de vecteur de Case (\emph{Case.h}) et est mise à jour dans la fonction \begin{minted}{cpp}
-void MapReal::update(double delta);
+La partie environnement est implémentée dans les fichier \emph{Map.*}. La carte est représentée par un vecteur de vecteur de Case (\emph{Case.h}) et est mise à jour dans la fonction \begin{minted}{cpp}
+void Map::update(double delta);
 \end{minted}
 qui consiste en une boucle ou un évènement (soit un ajout de bijoux avec une probabilité de 0.2, soit un ajout de poussière avec une probabilité de 0.8) sur une case tirée au hasard. Deux évènements sont espacés d'un temps aléatoire (entre 10 et 1000 ms).
 \subsection{L'aspirateur}
@@ -94,7 +106,7 @@ While (amIAlive()){
     justDoIt();
 }
 \end{minted}
-En effet, tout comme emph{MapReal}, on peut trouver la fonction~:
+En effet, tout comme \emph{Map}, on peut trouver la fonction~:
 \begin{minted}{cpp}
 void Vacuum::update(double delta);
 \end{minted}
@@ -106,12 +118,20 @@ L'objet \emph{Sensors} est décrit dans \emph{Sensors.h} et contient le niveau d
 \begin{minted}{cpp}
 void Vacuum::executeCurrentAction(double delta);
 \end{minted}
-\subsection{La stratégie implémentée}
+\subsection{Les stratégies implémentées}
+
+Deux stratégies ont été implémentées pour ce TP. Une première (\emph{SuckWithLevelStrategy}) tente d'évaluer la meilleure action possible et ne possède pas d'algorithme de déplacement (et donc ne marche pas sur une carte avec des obstacles). Une seconde (\emph{StateStrategy}) fonctionne à l'aide d'une machine à état et d'un algorithme pour planifier ses trajectoires (pour fonctionner sur les cartes avec obstacles).
+
+\subsubsection{SuckWithLevelStrategy}
+
 L'intelligence de l'agent est implémentée dans une stratégie. Nous avons modélisé un agent basé sur les buts avec un état mental de type \textsc{bdi} dans les fichiers \emph{SuckWithLevelStrategy.*}. Les croyances de l'agent sont représentées par une map interne qui donne ce que sais l'agent à un moment T. Cette carte est mise à jour avant chaque décision via la fonction~:
 \begin{minted}{cpp}
 void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors);
 \end{minted}
-et est représentée via un \emph{std::deque<std::deque<Case>>} (plus facile à transformer lors de la découverte de la carte par l'agent).
+et est représentée via un \emph{std::deque<std::deque<StrCase>>} (plus facile à transformer lors de la découverte de la carte par l'agent). Une \emph{StrCase} est une Case avec l'attribut~:
+\begin{minted}{cpp}
+std::time_t lastVisit;
+\end{minted}
 
 Le désir de l'agent est de rendre la carte la plus propre possible en évitant d'aspirer les bijoux (mais en les ramassant), tout en évitant de tomber en panne. Pour modéliser ces choix, une fonction s'occupe de donner un score à chaque action possible. Le but de l'agent est de maximiser son score. Cette prise de décision est modélisée dans la fonction~:
 \begin{minted}{cpp}
@@ -124,6 +144,18 @@ Ainsi, l'action retournée correspond à son intention. Et on peut voir 4 intent
     \item Se déplacer vers la case qu'on a visité il y a le plus longtemps (ou il y a des chances d'avoir assez de poussière maintenant)
     \item Se déplacer vers la case d'origine ou on peut se recharger. Dans ces deux derniers cas, I=la prochaine case visitée, D=Le chemin à parcourir pour se rendre à cette case. Bien sûr, sur la route, l'agent peut décider d'aspirer/ramasser les bijoux s'il le juge utile.
 \end{itemize}
+
+\subsubsection{StateStrategy}
+
+Tout comme la précédente stratégie, \emph{StateStrategy} possède une fonction pour mettre à jour sa carte interne représentée par une \emph{std::deque<std::deque<StrCase>>}~:
+\begin{minted}{cpp}
+void updateInternalMap(const Sensors& sensors);
+\end{minted}
+La principale différence vient du choix d'action qui est donné par une machine à état (visible dans \emph{StateStrategyStates.*}). Tout comme la première stratégie on peut voir 4 intentions différentes. La seconde différence vient de la planification de la trajectoire. En effet, la première stratégie n'a pas d'algorithme de déplacement, mais se contente de se rapprocher de sa case objectif. Si un obstacle est présent, le robot risque de rester dans le même coin. Ici, la planification de la trajectoire est implémentée à l'aide d'un \emph{A*} dans la fonction~:
+\begin{minted}{cpp}
+	std::vector<ActionType> StateStrategy::pathTo(const Pos& target);
+\end{minted}
+
 
 \section{Conclusion}
 Au final, ce projet nous a permis d'implémenter plusieurs fonctionnements décrits en cours. Tout d'abord le concept d'agent ou nous avons dû réfléchir à quel type d'agent notre aspirateur correspondait. Ensuite, le principe d'état mental BDI. Enfin, comment implémenter la prise de décision à l'aide d'un scoring des différentes actions.
