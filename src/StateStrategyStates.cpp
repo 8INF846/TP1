@@ -44,6 +44,11 @@ Action GoToBaseAndChargeBatteryState::execute(StateStrategy* str) {
     std::ostream& out = Console::out(2);
     out << "State : GoToBaseAndChargeBattery" << std::endl;
 
+    // En passant, mettre à jour la dernière visite si la case n'est pas sale
+    if(str->dirtLevel() < MIN_DIRT_LEVEL_TO_SUCK) {
+        str->updateLastTimeVisited();
+    }
+
     // Si la batterie est pleine
     if(str->batteryFull()) {
         str->setState(GoToLatestVisitedCaseState::getInstance());
