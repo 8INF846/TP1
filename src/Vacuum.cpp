@@ -128,6 +128,7 @@ void Vacuum::execute(Action action) {
         }
         break;
     default:
+        std::cout << action.type << "##" << std::endl;
         break;
     }
 }

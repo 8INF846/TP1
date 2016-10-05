@@ -24,6 +24,9 @@ public:
     Pos position() const;
     Pos basePosition() const;
 
+    void setSpeed(unsigned int speed) { m_uiSpeed = speed; }
+    unsigned int getSpeed() { return m_uiSpeed; }
+
 private:
     /* Methods */
     void update(double delta);

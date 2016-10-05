@@ -89,6 +89,20 @@ int main(int argc, char* argv[]) {
                 map.stop();
                 vacuum.stop();
                 break;
+            case sf::Event::KeyPressed:
+                if (event.key.code == sf::Keyboard::P) {
+                    if(vacuum.getSpeed() * 2 < 1000) {
+                        vacuum.setSpeed(vacuum.getSpeed() + 10);
+                        map.setSpeed(map.getSpeed() + 10);
+                    }
+                }
+                if (event.key.code == sf::Keyboard::M) {
+                    if(vacuum.getSpeed() > 10) {
+                        vacuum.setSpeed(vacuum.getSpeed() - 10);
+                        map.setSpeed(map.getSpeed() - 10);
+                    }
+                }
+                break;
             default:
                 break;
             }

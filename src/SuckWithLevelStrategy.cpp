@@ -27,6 +27,7 @@ bool SuckWithLevelStrategy::changeFMaxScore(const float score) {
 Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 {
     Action finalAction;
+    finalAction.type = Iddle;
     updateInternalMap(sensors);
 
     std::random_device rd;
@@ -39,8 +40,8 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     m_fmaxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
-    scoreSuck += 60*sensors.dirt;
-    if(sensors.dirt > 0.2) scoreSuck += 200*sensors.dirt;
+    scoreSuck += 90*sensors.dirt;
+    if(sensors.dirt > 0.1) scoreSuck += 200*sensors.dirt;
     scoreSuck -= 200*sensors.jewelry; //If jewelry on the case
     scoreSuck -= sensors.battery < 30 ? std::pow(30-sensors.battery, 2) : 0;
     if(changeFMaxScore(scoreSuck)) finalAction.type = Suck;

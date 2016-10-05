@@ -102,6 +102,7 @@ public:
     void update(double delta);
 
     void setSpeed(unsigned int speed) { m_uiSpeed = speed; }
+    unsigned int getSpeed() { return m_uiSpeed; }
 
 private:
     std::vector<std::vector<Case>> m_cases;
