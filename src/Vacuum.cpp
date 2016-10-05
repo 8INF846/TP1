@@ -116,7 +116,7 @@ void Vacuum::execute(Action action) {
         break;
     case Suck:
         m_dBattery -= action.timer;
-        m_map->addDirt(m_position, - 15 * action.timer);
+        m_map->suckDirt(m_position, 15 * action.timer);
         std::cout << "[VACUUM]SUCKDIRT" << m_position << std::endl;
         break;
     case Iddle:
@@ -128,7 +128,7 @@ void Vacuum::execute(Action action) {
 }
 
 void Vacuum::update(double delta) {
-    // Récupérer les données des capteurs
+    // Si batterie vide l'aspirateur s'arrête
     if(batteryIsEmpty()) {
         std::cout << "[Vacuum]BATTERY IS EMPTY. STOP!" << std::endl;
         stop();

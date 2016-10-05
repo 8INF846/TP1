@@ -30,7 +30,7 @@ void Map::setIsFloor(Pos p, bool isFloor) {
     m_cases[p.y][p.x].isFloor = isFloor;
 }
 
-void Map::addJewel(Pos p) {
+void Map::addJewelry(Pos p) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
@@ -41,7 +41,9 @@ void Map::gatherJewelry(Pos p) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
-    m_cases[p.y][p.x].jewelry--;
+    if(m_cases[p.y][p.x].jewelry > 0) {
+        m_cases[p.y][p.x].jewelry--;
+    }
 }
 
 void Map::addDirt(Pos p, double delta) {
@@ -52,13 +54,19 @@ void Map::addDirt(Pos p, double delta) {
     if(m_cases[p.y][p.x].dirtLevel > 1) {
         m_cases[p.y][p.x].dirtLevel = 1;
     }
+    else if(m_cases[p.y][p.x].dirtLevel < 0) {
+        m_cases[p.y][p.x].dirtLevel = 0;
+    }
 }
 
-void Map::suckDirt(Pos p) {
+void Map::suckDirt(Pos p, double delta) {
     if(p.x < 0 || p.x >= int(width()) || p.y < 0 || p.y >= int(height())){
         throw std::string("Position out of map cannot be changed");
     }
-    m_cases[p.y][p.x].dirtLevel = 0;
+    m_cases[p.y][p.x].dirtLevel -= delta;
+    if(m_cases[p.y][p.x].dirtLevel < 0) {
+        m_cases[p.y][p.x].dirtLevel = 0;
+    }
 }
 
 unsigned int Map::width() const {
@@ -84,7 +92,7 @@ void Map::update(double delta) {
     currentPos.y = h;
     if(random_event(mt) == 1) {
         std::cout << "Add jewel at pos (" << h << ";" << w << ")" << std::endl;
-        addJewel(currentPos);
+        addJewelry(currentPos);
     } else {
         if(m_cases[h][w].dirtLevel < 1.0) {
             std::cout << "Add dirt at pos (" << h << ";" << w << ")" << std::endl;

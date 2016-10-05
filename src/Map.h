@@ -70,7 +70,7 @@ public:
      * Add one jewelry at given position.
      * @param p the position to update
      */
-    void addJewel(Pos p);
+    void addJewelry(Pos p);
 
     /**
      * Remove one jewelry at given position.
@@ -89,7 +89,7 @@ public:
      * Remove all dirt at given position.
      * @param p the position to update
      */
-    void suckDirt(Pos p);
+    void suckDirt(Pos p, double delta);
 
     /**
      * Print a map
