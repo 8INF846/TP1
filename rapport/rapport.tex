@@ -56,7 +56,7 @@ Le fichier possède 2 fichiers de configuration. Le premier décrit la carte dan
 11100
 \end{minted}
 
-Le second fichier configure l'agent. On peut lui donner le nom de la stratégie souhaitée (pour le moment deux stratégies ont été implémentées, SuckWithLevel et State) ainsi que sa position de base dans la carte~:
+Le second fichier configure l'agent. On peut lui donner le nom de la stratégie souhaitée (pour le moment deux stratégies ont été implémentées, \emph{SuckWithLevel} et \emph{State}) ainsi que sa position de base dans la carte~:
 
 \begin{minted}{python}
 ###############################################################################
@@ -66,12 +66,14 @@ Le second fichier configure l'agent. On peut lui donner le nom de la stratégie 
 # Strategy for the agent
 # {SuckWithLevel}
 # {State}
-strategy=State
-# Correspond à la case d'origine
+strategy=SuckWithLevel
 base=0;0
-# Multiplicateur de vitesse du programme
-speed=10
+# 0 = nothing, 1 = Choosed Action + Status, 2 = 1 + States process, 3 = 2 + internal map
+log=4
+speed=1
 \end{minted}
+
+Le paramètre log change le niveau d'affichage d'informations dans la console. Le paramètre speed modifie la vitesse d'éxécution, qui est aussi modifiable en cours d'éxécution avec les touches \emph{p} et \emph{m}.
 
 Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
 \begin{verbatim}

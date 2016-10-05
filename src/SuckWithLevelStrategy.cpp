@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <chrono>
+#include "Console.h"
 
 SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     //Add 1 case
@@ -203,14 +204,14 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 
     simulateInternalAction(finalAction.type);
 
-
-    std::cout << "Score:" << m_fmaxScore <<  std::endl;
-    std::cout << "Battery:" << sensors.battery <<  std::endl;
-    std::cout << "Iddle:" << scoreIddle <<  std::endl;
-    std::cout << "ScoreNorth:" << scoreMoveNorth <<  std::endl;
-    std::cout << "ScoreSouth:" << scoreMoveSouth <<  std::endl;
-    std::cout << "ScoreWest:" << scoreMoveWest<<  std::endl;
-    std::cout << "ScoreEast:" << scoreMoveEast<<  std::endl;
+    std::ostream& out = Console::out(2);
+    out << "Score:" << m_fmaxScore <<  std::endl;
+    out << "Battery:" << sensors.battery <<  std::endl;
+    out << "Iddle:" << scoreIddle <<  std::endl;
+    out << "ScoreNorth:" << scoreMoveNorth <<  std::endl;
+    out << "ScoreSouth:" << scoreMoveSouth <<  std::endl;
+    out << "ScoreWest:" << scoreMoveWest<<  std::endl;
+    out << "ScoreEast:" << scoreMoveEast<<  std::endl;
     printInternalMap(oldestCasePos);
     return finalAction;
 }
@@ -243,36 +244,37 @@ void SuckWithLevelStrategy::simulateInternalAction(ActionType action) {
 }
 
 void SuckWithLevelStrategy::printInternalMap(Pos oldest) {
-    std::cout << std::endl;
+    std::ostream& out = Console::out(3);
+    out << std::endl;
     for(size_t h = 0; h < m_internalMap.size(); ++h) {
         for(size_t w = 0; w < m_internalMap[0].size(); ++w) {
             if(m_internalMap[h][w].isFloor) {
-                std::cout << "| d:" << (m_internalMap[h][w].dirtLevel*10)
+                out << "| d:" << (m_internalMap[h][w].dirtLevel*10)
                 << " j:" << m_internalMap[h][w].jewelry;
                 if(m_currentPos.x == (int)w && m_currentPos.y == (int)h) {
-                    std::cout << " (X)";
+                    out << " (X)";
                 } else {
-                    std::cout << " (_)";
+                    out << " (_)";
                 }
 
                 if(m_basePos.x == (int)w && m_basePos.y == (int)h) {
-                    std::cout << " C ";
+                    out << " C ";
                 } else {
-                    std::cout << "   ";
+                    out << "   ";
                 }
 
                 if(oldest.x == (int)w && oldest.y == (int)h) {
-                    std::cout << " O ";
+                    out << " O ";
                 } else {
-                    std::cout << "   ";
+                    out << "   ";
                 }
             } else {
-                std::cout << "|==================";
+                out << "|==================";
             }
         }
-        std::cout << std::endl;
+        out << std::endl;
     }
-    std::cout << std::endl;
+    out << std::endl;
 }
 
 
