@@ -87,13 +87,15 @@ int main(int argc, char* argv[]) {
                 case sf::Event::Closed:
                     window.close();
                     break;
+                default:
+                    break;
             }
         }
         window.clear(sf::Color(0,0,0,255));
 
         // Affichage de la carte
-        for(int i = 0; i < map.width(); i++) {
-            for(int j = 0; j < map.height(); j++) {
+        for(unsigned int i = 0; i < map.width(); i++) {
+            for(unsigned int j = 0; j < map.height(); j++) {
                 Pos pos(i, j);
                 if(map.isFloor(pos)) {
                     float dirtLevel = map.dirtLevel(pos);

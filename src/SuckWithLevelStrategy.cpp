@@ -45,7 +45,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     }
 
     //Test if a new case is discovered
-    auto scoreMoveNorth = -1.0;
+    auto scoreMoveNorth = 1.0;
     if(sensors.north) {
         if(m_internalMap[m_currentPos.y-1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveNorth += getScoreDiscoverCase();
 
@@ -54,7 +54,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
             maxScore = scoreMoveNorth;
         }
     }
-    auto scoreMoveSouth = -1.0;
+    auto scoreMoveSouth = 1.0;
     if(sensors.south) {
         if(m_internalMap[m_currentPos.y+1][m_currentPos.x].dirtLevel == UNKNOWN_STATUS) scoreMoveSouth += getScoreDiscoverCase();
 
@@ -63,7 +63,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
             maxScore = scoreMoveSouth;
         }
     }
-    auto scoreMoveEast = -1.0;
+    auto scoreMoveEast = 1.0;
     if(sensors.east) {
         if(m_internalMap[m_currentPos.y][m_currentPos.x+1].dirtLevel == UNKNOWN_STATUS) scoreMoveEast += getScoreDiscoverCase();
 
@@ -72,7 +72,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
             maxScore = scoreMoveEast;
         }
     }
-    auto scoreMoveWest = -1.0;
+    auto scoreMoveWest = 1.0;
     if(sensors.west) {
         if(m_internalMap[m_currentPos.y][m_currentPos.x-1].dirtLevel == UNKNOWN_STATUS) scoreMoveWest += getScoreDiscoverCase();
 
@@ -141,6 +141,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
                 maxScore = scoreMoveNorth;
             }
         }
+
         if(oldestCasePos.y > m_currentPos.y && sensors.south) {
             scoreMoveSouth += 80;
             if(scoreMoveSouth > maxScore || (scoreMoveSouth == maxScore && dist(mt) == 0)) {
@@ -148,6 +149,46 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
                 maxScore = scoreMoveSouth;
             }
         }
+
+        //Avoid blocking case
+        if((oldestCasePos.y > m_currentPos.y && !sensors.south)
+        || (oldestCasePos.y < m_currentPos.y && !sensors.north)) {
+            if((sensors.west && !sensors.east) || (sensors.west && sensors.east
+            && m_internalMap[m_currentPos.y][m_currentPos.x-1].lastVisit
+            < m_internalMap[m_currentPos.y][m_currentPos.x+1].lastVisit)) {
+                scoreMoveWest += 60;
+                if(scoreMoveWest > maxScore || (scoreMoveWest == maxScore && dist(mt) == 0)) {
+                    finalAction.type = GoWest;
+                    maxScore = scoreMoveWest;
+                }
+            } else if(sensors.east) {
+                scoreMoveEast += 60;
+                if(scoreMoveEast > maxScore || (scoreMoveEast == maxScore && dist(mt) == 0)) {
+                    finalAction.type = GoEast;
+                    maxScore = scoreMoveEast;
+                }
+            }
+        }
+
+        if((oldestCasePos.x > m_currentPos.x && !sensors.east)
+        || (oldestCasePos.x < m_currentPos.x && !sensors.west)) {
+            if((sensors.north && !sensors.south) || (sensors.north && sensors.south
+            && m_internalMap[m_currentPos.y-1][m_currentPos.x].lastVisit
+            < m_internalMap[m_currentPos.y+1][m_currentPos.x].lastVisit)) {
+                scoreMoveNorth += 60;
+                if(scoreMoveNorth > maxScore || (scoreMoveNorth == maxScore && dist(mt) == 0)) {
+                    finalAction.type = GoNorth;
+                    maxScore = scoreMoveNorth;
+                }
+            } else if(sensors.south) {
+                scoreMoveSouth += 60;
+                if(scoreMoveSouth > maxScore || (scoreMoveSouth == maxScore && dist(mt) == 0)) {
+                    finalAction.type = GoSouth;
+                    maxScore = scoreMoveSouth;
+                }
+            }
+        }
+
         if(oldestCasePos.x < m_currentPos.x && sensors.west) {
             scoreMoveWest += 80;
             if(scoreMoveWest > maxScore || (scoreMoveWest == maxScore && dist(mt) == 0)) {
@@ -222,6 +263,11 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
 
     std::cout << "Score:" << maxScore <<  std::endl;
     std::cout << "Battery:" << sensors.battery <<  std::endl;
+    std::cout << "Iddle:" << scoreIddle <<  std::endl;
+    std::cout << "ScoreNorth:" << scoreMoveNorth <<  std::endl;
+    std::cout << "ScoreSouth:" << scoreMoveSouth <<  std::endl;
+    std::cout << "ScoreWest:" << scoreMoveWest<<  std::endl;
+    std::cout << "ScoreWest:" << scoreMoveEast<<  std::endl;
     printInternalMap(oldestCasePos);
     return finalAction;
 }

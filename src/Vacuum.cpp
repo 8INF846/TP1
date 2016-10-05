@@ -116,7 +116,7 @@ void Vacuum::update(double delta) {
         stop();
     }
 
-    auto delay = std::chrono::milliseconds(1000);
+    auto delay = std::chrono::milliseconds(100);
     std::cout << "[Vacuum]sleep " << std::chrono::duration_cast<std::chrono::milliseconds>(delay).count() << " ms" << std::endl;
     std::this_thread::sleep_for(delay);
 
