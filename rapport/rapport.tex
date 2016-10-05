@@ -49,7 +49,7 @@ Ce devoir a été développé en \emph{C++14} et a été testé sur des environn
 \subsection{Compilation}
 Pour compiler le programme, il suffit d'exécuter la commande \emph{make}. Un binaire nommé \emph{agentTP1} sera alors présent.
 \subsection{Configuration et exécution}
-Le fichier possède 2 fichiers de configuration. Le premier décrit la carte dans laquelle l'agent va évoluer. Par exemple, voici le fichier de configuration qui correspond à la carte du TP1~:
+Le fichier possède 2 fichiers de configuration. Le premier décrit la carte dans laquelle l'agent va évoluer. Par exemple, voici le fichier de configuration qui correspond à la carte du TP1 (d'autres cartes sont disponibles dans le répertoire)~:
 \begin{minted}{python}
 11100
 11111
@@ -122,7 +122,7 @@ void Vacuum::executeCurrentAction(double delta);
 \end{minted}
 \subsection{Les stratégies implémentées}
 
-Deux stratégies ont été implémentées pour ce TP. Une première (\emph{SuckWithLevelStrategy}) tente d'évaluer la meilleure action possible et ne possède pas d'algorithme de déplacement (et donc ne marche pas sur une carte avec des obstacles). Une seconde (\emph{StateStrategy}) fonctionne à l'aide d'une machine à état et d'un algorithme pour planifier ses trajectoires (pour fonctionner sur les cartes avec obstacles).
+Deux stratégies ont été implémentées pour ce TP. Une première (\emph{SuckWithLevelStrategy}) tente d'évaluer la meilleure action possible et ne possède pas d'algorithme de déplacement (et donc ne marche pas sur une carte avec des obstacles, comme peut le montrer un test sur le fichier \emph{map2}). Une seconde (\emph{StateStrategy}) fonctionne à l'aide d'une machine à état et d'un algorithme pour planifier ses trajectoires (pour fonctionner sur les cartes avec obstacles).
 
 \subsubsection{SuckWithLevelStrategy}
 
