@@ -25,6 +25,9 @@ Action GoToLatestVisitedCaseState::execute(StateStrategy* str) {
         str->setState(SuckDirtState::getInstance());
         return Action();
     }
+    else {
+        str->updateLastTimeVisited();
+    }
     out4 << "<move>";
     ActionType direction;
     try {
@@ -85,7 +88,11 @@ Action SuckDirtState::execute(StateStrategy* str) {
         str->setState(GoToLatestVisitedCaseState::getInstance());
         return Action();
     }
+    else {
+        str->updateLastTimeVisited();
+    }
     float timer = std::min(str->smartBatteryLevel() / SUCK_BATTERY_COST,
             str->dirtLevel()) * SUCK_TIME_COST;
+    str->updateLastTimeVisited();
     return Action(Suck, timer);
 }

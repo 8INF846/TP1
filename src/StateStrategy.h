@@ -32,6 +32,7 @@ public:
 
     void setState(State* state);
     void go(ActionType direction);
+    void updateLastTimeVisited();
 
 private:
     void updateInternalMap(const Sensors& sensors);

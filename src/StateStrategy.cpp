@@ -98,8 +98,9 @@ ActionType StateStrategy::actionTypeToBase() {
 ActionType StateStrategy::actionTypeToLatestVisitedCase() {
     auto p = positionOfLatestVisitedCase();
     auto path = pathTo(p);
-    if(path.size() == 0)
+    if(path.size() == 0) {
         throw std::string("path.size() == 0");
+    }
     return path[0];
 }
 
@@ -273,12 +274,16 @@ void StateStrategy::displayInternalMap() {
     }
 }
 
-void StateStrategy::updateInternalMap(const Sensors& sensors) {
+void StateStrategy::updateLastTimeVisited() {
     auto now = std::chrono::system_clock::now();
+    m_map[m_position.y][m_position.x].lastVisit = std::chrono::system_clock::to_time_t(now);
+}
 
+void StateStrategy::updateInternalMap(const Sensors& sensors) {
     // Mise à jour de la case courante
-    m_map[m_position.y][m_position.x] = StrCase(true, sensors.dirt,
-            sensors.jewelry, std::chrono::system_clock::to_time_t(now));
+    m_map[m_position.y][m_position.x].status = true;
+    m_map[m_position.y][m_position.x].dirtLevel = sensors.dirt;
+    m_map[m_position.y][m_position.x].jewelry = sensors.jewelry;
 
     // Ajout d'une colonne à l'Ouest si nécessaire
     if(m_position.x == 0 && sensors.west) {
