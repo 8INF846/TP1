@@ -6,7 +6,7 @@
 
 SuckWithLevelStrategy::SuckWithLevelStrategy() : Strategy() {
     //Add 1 case
-    std::deque<Case> origin = std::deque<Case>(1);
+    std::deque<StrCase> origin = std::deque<StrCase>(1);
     m_internalMap.push_back(origin);
     m_basePos.x = 0;
     m_basePos.y = 0;
@@ -320,7 +320,7 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
         if(sensors.west) {
             //Add a col
             for(size_t h = 0; h < m_internalMap.size(); ++h) {
-                Case c;
+                StrCase c;
                 c.isFloor = (int)h == m_currentPos.y;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
@@ -334,9 +334,9 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
     if(m_currentPos.y == 0) {
         if(sensors.north) {
             //Add a row
-            std::deque<Case> newRow;
+            std::deque<StrCase> newRow;
             for(size_t w = 0; w < m_internalMap.at(0).size(); ++w) {
-                Case c;
+                StrCase c;
                 c.isFloor = (int)w == m_currentPos.x;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
@@ -352,7 +352,7 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
         if(sensors.east) {
             //Add a col
             for(size_t h = 0; h < m_internalMap.size(); ++h) {
-                Case c;
+                StrCase c;
                 c.isFloor = (int)h == m_currentPos.y;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;
@@ -363,9 +363,9 @@ void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors) {
     if(m_currentPos.y == (int)m_internalMap.size()-1) {
         if(sensors.south) {
             //Add a row
-            std::deque<Case> newRow;
+            std::deque<StrCase> newRow;
             for(size_t w = 0; w < m_internalMap.at(0).size(); ++w) {
-                Case c;
+                StrCase c;
                 c.isFloor = (int)w == m_currentPos.x;
                 c.dirtLevel = UNKNOWN_STATUS;
                 c.jewelry = UNKNOWN_STATUS;

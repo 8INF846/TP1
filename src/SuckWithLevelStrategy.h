@@ -4,7 +4,7 @@
 #include "Strategy.h"
 #include "Action.h"
 #include "Pos.h"
-#include "Case.h"
+#include "StrCase.h"
 
 #include <deque>
 
@@ -25,7 +25,7 @@ private:
      */
     void printInternalMap(Pos oldest);
 
-    std::deque<std::deque<Case>> m_internalMap;
+    std::deque<std::deque<StrCase>> m_internalMap;
     Pos m_basePos;
     Pos m_currentPos;
 
