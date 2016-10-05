@@ -29,3 +29,4 @@
 *.out
 *.app
 src/agentTP1
+src/log.txt

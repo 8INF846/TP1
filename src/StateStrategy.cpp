@@ -98,6 +98,8 @@ ActionType StateStrategy::actionTypeToBase() {
 ActionType StateStrategy::actionTypeToLatestVisitedCase() {
     auto p = positionOfLatestVisitedCase();
     auto path = pathTo(p);
+    if(path.size() == 0)
+        throw std::string("path.size() == 0");
     return path[0];
 }
 
@@ -258,7 +260,7 @@ std::vector<ActionType> StateStrategy::pathTo(const Pos& target) {
             }
         }
     }
-    throw "Path not found";
+    throw std::string("Path not found");
 }
 
 void StateStrategy::displayInternalMap() {

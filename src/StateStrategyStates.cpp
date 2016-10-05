@@ -26,7 +26,13 @@ Action GoToLatestVisitedCaseState::execute(StateStrategy* str) {
         return Action();
     }
     out4 << "<move>";
-    ActionType direction = str->actionTypeToLatestVisitedCase();
+    ActionType direction;
+    try {
+        direction = str->actionTypeToLatestVisitedCase();
+    } catch (const std::string& e) {
+        direction = Iddle;
+    }
+
     str->go(direction);
     return Action(direction);
 }
