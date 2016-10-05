@@ -3,12 +3,19 @@
 
 #define UNKNOWN_STATUS -1
 #include "Case.h"
+#include "Pos.h"
+#include <iostream>
 
 struct StrCase : public Case {
     time_t lastVisit;
+    Pos cameFrom;
+    double gScore;
+    double fScore;
+    bool status;
 
-    StrCase();
+    StrCase(bool isFloor = false, bool status = false);
     StrCase(bool isFloor, float dirtLevel, int jewelry, time_t lastVisit);
+    friend std::ostream& operator<<(std::ostream& output, const StrCase& strCase);
 };
 
 #endif

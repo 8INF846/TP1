@@ -4,6 +4,7 @@
 
 # Strategy for the agent
 # {SuckWithLevel}
-strategy=SuckWithLevel
+# {State}
+strategy=State
 base=0;0
 speed=10

@@ -9,6 +9,7 @@
 #include "Loader.h"
 #include "Pos.h"
 #include "SuckWithLevelStrategy.h"
+#include "StateStrategy.h"
 
 Map Loader::loadMap(const std::string& filename) {
     //Read the map file
@@ -82,10 +83,14 @@ Vacuum Loader::loadVacuum(const std::string& filename, Map& map) {
                 std::transform(value.begin(), value.end(), value.begin(), ::tolower);
                 if(param == "strategy") {
                     //Note we just have one strategy for now
-                    if(value != "suckwithlevel") {
-                        throw std::string("Can't choose unknown strategy: " + value);
-                    } else {
+                    if(value == "suckwithlevel") {
                         strategy = std::make_unique<SuckWithLevelStrategy>();
+                    }
+                    else if(value == "state") {
+                        strategy = std::make_unique<StateStrategy>();
+                    }
+                    else {
+                        throw std::string("Can't choose unknown strategy: " + value);
                     }
                 } else if (param == "base") {
                     //The position of the vacuum at t=0

@@ -8,7 +8,7 @@ LD_FLAGS := -lsfml-graphics -lsfml-window -lsfml-system
 ifeq ($(shell uname -m), armv7l)
 CC := $(CC)-6
 endif
-CC_FLAGS := --std=c++14 -Wall -pthread -O3
+CC_FLAGS := --std=c++14 -pthread -O3
 OUTNAME = agentTP1
 
 all: clean tp1
