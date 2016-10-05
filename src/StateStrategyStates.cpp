@@ -20,7 +20,7 @@ Action GoToLatestVisitedCaseState::execute(StateStrategy* str) {
         return Action();
     }
     // Si de la saleté sur la case courante, l'aspirer
-    if(str->dirtLevel() >= double(0.1)) {
+    if(str->dirtLevel() >= MIN_DIRT_LEVEL_TO_SUCK) {
         out4 << "<dirt>";
         str->setState(SuckDirtState::getInstance());
         return Action();
