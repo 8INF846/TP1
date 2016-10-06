@@ -143,7 +143,7 @@ Tout comme \emph{Map}, on peut trouver la fonction~:
 \begin{minted}{cpp}
 void Vacuum::update(double delta);
 \end{minted}
-puisque les deux classes héritent de \emph{Startable}. Cette fois la méthode 
+puisque les deux classes héritent de \emph{Startable}. Cette fois la méthode
 observera l'environnement en mettant à jour l'état observé via la méthode~:
 \begin{minted}{cpp}
 Sensors Vacuum::observe();
@@ -175,7 +175,7 @@ L'intelligence de l'agent est implémentée dans une stratégie. Nous avons mod�
 \begin{minted}{cpp}
 void SuckWithLevelStrategy::updateInternalMap(const Sensors& sensors);
 \end{minted}
-et est représentée via un \emph{std::deque<std::deque<StrCase>>} (plus facile à transformer lors de la découverte de la carte par l'agent). Une \emph{StrCase} est une Case avec l'attribut~:
+et est représentée via un \begin{verbatim}std::deque<std::deque<StrCase>>\end{verbatim} (plus facile à transformer lors de la découverte de la carte par l'agent). Une \emph{StrCase} est une Case avec l'attribut~:
 \begin{minted}{cpp}
 std::time_t lastVisit;
 \end{minted}
@@ -216,8 +216,8 @@ implémentée à l'aide d'un algorithme \emph{A*} dans les méthodess~:
   std::vector<ActionType> StateStrategy::constructpath(...);
 \end{minted}
 
-En outre cette stratégie aspire les cases pas à pas (restant au maximum 0.2s par
-aspiration) pour vérifier de manière régulière si un bijoux ne serait pas tombé
+En outre, cette stratégie aspire les cases pas à pas (restant au maximum 0.2s par
+aspiration) pour vérifier de manière régulière si un bijou ne serait pas tombé
 sur la case actuelle depuis la dernière observation de l'environnement.
 
 
