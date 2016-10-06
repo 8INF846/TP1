@@ -147,7 +147,7 @@ void Vacuum::update(double delta) {
     if(batteryIsEmpty()) {
         std::ostream& out0 = Console::out(0);
         out0 << "[ERROR] Battery is empty. Stop !" << std::endl;
-        out0 << "[ERROR] Wait until a friendly human plugs me..." << std::endl;
+        out0 << "[ERROR] Wait until a friendly human plugs me in..." << std::endl;
         stop();
     }
 
