@@ -69,7 +69,7 @@ void Map::suckDirt(Pos p, double delta) {
         m_cases[p.y][p.x].dirtLevel = 0;
     }
     if(m_cases[p.y][p.x].jewelry > 0) {
-        std::ostream& out = Console::out(1);
+        std::ostream& out = Console::out(0);
         out << "[ERROR] Jewelry sucked !" << std::endl;
         out << "[ERROR] Friendly human is not gonna be happy..." << std::endl;
     }

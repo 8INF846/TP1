@@ -145,8 +145,9 @@ void Vacuum::update(double delta) {
 
     // Si batterie vide l'aspirateur s'arrête
     if(batteryIsEmpty()) {
-        out << "[ERROR] Battery is empty. Stop !" << std::endl;
-        out << "[ERROR] Wait until a friendly human plugs me..." << std::endl;
+        std::ostream& out0 = Console::out(0);
+        out0 << "[ERROR] Battery is empty. Stop !" << std::endl;
+        out0 << "[ERROR] Wait until a friendly human plugs me..." << std::endl;
         stop();
     }
 
