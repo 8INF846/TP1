@@ -13,6 +13,7 @@
 #define GATHER_BATTERY_COST 1.4
 #define SUCK_BATTERY_COST 1
 #define SUCK_TIME_COST 2
+#define MAX_SUCKING_TIME 0.1
 
 class GoToBaseAndChargeBatteryState;
 class GatherJewelryState;
