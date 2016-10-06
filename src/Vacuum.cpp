@@ -130,7 +130,7 @@ void Vacuum::execute(Action action) {
         break;
     case Iddle:
         if(m_position == m_basePosition) {
-            m_dBattery = 100.0;
+            m_dBattery = std::min(100., m_dBattery + 2 * action.timer);
         }
         break;
     default:

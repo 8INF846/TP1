@@ -12,7 +12,7 @@ enum ActionType {
     GoSouth, // idem
     GoEast,  // idem
     GoWest,  // idem
-    Suck,    // timer = t, energy = t, remove = 15 * t
+    Suck,    // timer = t, energy = t, remove = 1.5 * t
     Gather,  // timer = 3, energy = 1.4, remove = 1
     Iddle,    // sur base : timer = t, energy = 2 * t
     None

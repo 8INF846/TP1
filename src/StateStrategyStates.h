@@ -7,17 +7,16 @@
 #include "Action.h"
 #include "StrCase.h"
 
-#define MOVEMENT_BATTERY_COST 2
+#define MOVEMENT_BATTERY_COST 1
 #define MIN_DIRT_LEVEL_TO_SUCK 0.1
 #define CHARGE_TIME_COST 0.5
 #define GATHER_BATTERY_COST 1.4
-#define SUCK_BATTERY_COST 0.667
-#define SUCK_TIME_COST 1
+#define SUCK_BATTERY_COST 1
+#define SUCK_TIME_COST 0.667
 
 class GoToBaseAndChargeBatteryState;
 class GatherJewelryState;
 class SuckDirtState;
-
 
 /**
  * L'aspirateur essaye de rejoindre la case la plus anciennement visitée.

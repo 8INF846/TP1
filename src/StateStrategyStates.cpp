@@ -55,7 +55,9 @@ Action GoToBaseAndChargeBatteryState::execute(StateStrategy* str) {
         return Action();
     }
     if(str->isOnBase()) {
-        return Action(Iddle, (100 - str->batteryLevel()) * CHARGE_TIME_COST);
+        // Plafoner le temps pour "voir le rechargement"
+        auto missing = 100. - str->batteryLevel();
+        return Action(Iddle, std::min(missing, 3.) * CHARGE_TIME_COST);
     }
     ActionType direction = str->actionTypeToBase();
     str->go(direction);
