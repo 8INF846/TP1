@@ -12,7 +12,7 @@
 #define CHARGE_TIME_COST 0.5
 #define GATHER_BATTERY_COST 1.4
 #define SUCK_BATTERY_COST 1
-#define SUCK_TIME_COST 0.667
+#define SUCK_TIME_COST 2
 
 class GoToBaseAndChargeBatteryState;
 class GatherJewelryState;

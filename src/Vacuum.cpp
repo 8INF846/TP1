@@ -126,7 +126,7 @@ void Vacuum::execute(Action action) {
         break;
     case Suck:
         m_dBattery -= action.timer;
-        m_map->suckDirt(m_position, 15 * action.timer);
+        m_map->suckDirt(m_position, 0.5 * action.timer);
         break;
     case Iddle:
         if(m_position == m_basePosition) {
