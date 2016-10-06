@@ -18,3 +18,7 @@ clean:
 
 tp1:
 	$(CC) $(CPP_FILES) $(H_FILES) -o $(OUTNAME) $(LD_FLAGS) $(CC_FLAGS)
+
+win:
+	rm -f $(OUTNAME).exe
+	x86_64-w64-mingw32-c++ $(CPP_FILES) $(H_FILES) -o $(OUTNAME).exe $(LD_FLAGS) $(CC_FLAGS) -I./SFML-2.4.0/include/ -L./SFML-2.4.0/lib/
