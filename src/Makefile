@@ -21,4 +21,4 @@ tp1:
 
 win:
 	rm -f $(OUTNAME).exe
-	x86_64-w64-mingw32-c++ $(CPP_FILES) $(H_FILES) -o $(OUTNAME).exe $(LD_FLAGS) $(CC_FLAGS) -I./SFML-2.4.0/include/ -L./SFML-2.4.0/lib/
+	x86_64-w64-mingw32-c++ $(CPP_FILES) $(H_FILES) -o $(OUTNAME).exe $(LD_FLAGS) $(CC_FLAGS) -I/home/AmarOk/Downloads/SFML-2.4.0/include/ -L/home/AmarOk/Downloads/SFML-2.4.0/lib/ -DSFML_STATIC

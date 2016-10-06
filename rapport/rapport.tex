@@ -46,7 +46,7 @@ temps nous justifierons nos choix de modélisation.
 \section{Exécution du programme}
 \subsection{Dépendances du projet}
 Ce devoir a été développé en \emph{C++14} et a été testé sur des environnements
-\emph{Linux} (mais fonctionne normalement sur Windows). Pour compiler le
+\emph{Linux} et \emph{Windows}. Pour compiler le
 programme il vous faut~:
 \begin{itemize}
     \item \emph{G++} (version 6 recommandée)
@@ -66,7 +66,7 @@ configuration correspondant à la carte du sujet du TP1~:
 11100
 \end{minted}
 Deux exemplaires de fichiers de configuration de carte sont présents et nommés
-mph{map} et mph{map2}.
+\emph{map} et \emph{map2}.
 
 Le second type de fichier configure l'agent. On peut lui donner le nom de la
 stratégie souhaitée (pour le moment deux stratégies ont été implémentées,
@@ -89,7 +89,7 @@ speed=1
 \end{minted}
 
 Le paramètre log change le niveau d'affichage d'informations dans la console. Le
-paramètre speed modifie la vitesse d'éxécution, qui est aussi modifiable en
+paramètre speed modifie la vitesse d'éxécution (si la vitesse est trop haute, la carte va générer plus vite que l'aspirateur ne pourra aspirer), qui est aussi modifiable en
 cours d'éxécution avec les touches \emph{p} et \emph{m}. Deux exemples de tels
 fichiers sont présents et nommés mph{vacuum} et mph{vacuum2}.
 
@@ -97,6 +97,18 @@ fichiers sont présents et nommés mph{vacuum} et mph{vacuum2}.
 Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
 \begin{verbatim}
 ./agentTP1 map vacuum
+\end{verbatim}
+
+Pour windows, il suffit d'ouvrir le programme \emph{cmd.exe}, de se rendre dans le dossier où se trouve l'éxécutable, et de taper~:
+\begin{verbatim}
+agentTP1.exe map vacuum
+\end{verbatim}
+
+Nous proposons la série d'éxécution suivante~:
+\begin{verbatim}
+agentTP1.exe map vacuum
+agentTP1.exe map2 vacuum
+agentTP1.exe map2 vacuum2
 \end{verbatim}
 
 \begin{figure}[h]
