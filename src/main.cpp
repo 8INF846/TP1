@@ -116,9 +116,9 @@ int main(int argc, char* argv[]) {
                     float dirtLevel = map.dirtLevel(pos);
                     floor.setPosition(i * 100, j * 100);
                     floor.setFillColor(sf::Color(
-                    255 - 10 * dirtLevel,
-                    255 - 20 * dirtLevel,
-                    255 - 200 * dirtLevel));
+                    255 - 178 * dirtLevel,
+                    255 - 195 * dirtLevel,
+                    255 - 216 * dirtLevel));
                     window.draw(floor);
                     if(map.jewelry(pos) > 0) {
                         jewelrySprite.setPosition(pos.x * 100, pos.y * 100);
