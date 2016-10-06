@@ -38,6 +38,7 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     auto scoreIddle = (m_currentPos == m_basePos) ?
     100.-sensors.battery : 0;
     if(sensors.battery < 30) scoreIddle += (m_currentPos == m_basePos) ? std::pow(30-sensors.battery, 2) : 0;
+    finalAction.timer = (100. - sensors.battery) / 2;
     m_fmaxScore = scoreIddle;
 
     auto scoreSuck = -1.0; //(loose 1 of energy)
@@ -45,7 +46,10 @@ Action SuckWithLevelStrategy::findNextAction(const Sensors& sensors)
     if(sensors.dirt > 0.1) scoreSuck += 200*sensors.dirt;
     scoreSuck -= 200*sensors.jewelry; //If jewelry on the case
     scoreSuck -= sensors.battery < 30 ? std::pow(30-sensors.battery, 2) : 0;
-    if(changeFMaxScore(scoreSuck)) finalAction.type = Suck;
+    if(changeFMaxScore(scoreSuck)) {
+        finalAction.type = Suck;
+        finalAction.timer = sensors.dirt * 2;
+    }
 
     auto scoreGather = -1.0; //(loose 1 of energy)
     scoreGather += 200*sensors.jewelry; //If jewelry on the case
