@@ -37,26 +37,41 @@
 \end{titlepage}
 
 \section{Introduction}
-Le but de ce premier TP était de réaliser un agent intelligent. Cet agent prend la forme d'un aspirateur qui doit aspirer les pièces d'un manoir où de la poussière et des bijoux apparaissent de manière aléatoire. De plus, l'agent doit posséder un état mental de type BDI comme vu en cours. Dans ce rapport, nous verrons dans une première partie comment exécuter le programme, puis en second temps nous justifierons nos choix de modélisation.
+Le but de ce premier TP était de réaliser un agent intelligent. Cet agent prend
+la forme d'un aspirateur qui doit aspirer les pièces d'un manoir où de la
+poussière et des bijoux apparaissent de manière aléatoire. De plus, l'agent doit
+posséder un état mental de type BDI comme vu en cours. Dans ce rapport, nous
+verrons dans une première partie comment exécuter le programme, puis en second
+temps nous justifierons nos choix de modélisation.
 \section{Exécution du programme}
 \subsection{Dépendances du projet}
-Ce devoir a été développé en \emph{C++14} et a été testé sur des environnements \emph{Linux} (mais fonctionne normalement sur Windows). Pour compiler le programme il vous faut~:
+Ce devoir a été développé en \emph{C++14} et a été testé sur des environnements
+\emph{Linux} (mais fonctionne normalement sur Windows). Pour compiler le
+programme il vous faut~:
 \begin{itemize}
     \item \emph{G++} (version 6 recommandée)
     \item La librairie \emph{SFML}
     \item \emph{Make}
 \end{itemize}
 \subsection{Compilation}
-Pour compiler le programme, il suffit d'exécuter la commande \emph{make}. Un binaire nommé \emph{agentTP1} sera alors présent.
+Pour compiler le programme, il suffit d'exécuter la commande \emph{make}. Un
+binaire nommé \emph{agentTP1} sera alors présent.
 \subsection{Configuration et exécution}
-Le fichier possède 2 fichiers de configuration. Le premier décrit la carte dans laquelle l'agent va évoluer. Par exemple, voici le fichier de configuration qui correspond à la carte du TP1 (d'autres cartes sont disponibles dans le répertoire)~:
+Le dossier des sources possède 2 types de fichiers de configuration. Le premier
+permet de décrire la carte dans laquelle l'agent va évoluer. Voici un exemple de
+configuration correspondant à la carte du sujet du TP1~:
 \begin{minted}{python}
 11100
 11111
 11100
 \end{minted}
+Deux exemplaires de fichiers de configuration de carte sont présents et nommés
+mph{map} et mph{map2}.
 
-Le second fichier configure l'agent. On peut lui donner le nom de la stratégie souhaitée (pour le moment deux stratégies ont été implémentées, \emph{SuckWithLevel} et \emph{State}) ainsi que sa position de base dans la carte~:
+Le second type de fichier configure l'agent. On peut lui donner le nom de la
+stratégie souhaitée (pour le moment deux stratégies ont été implémentées,
+\emph{SuckWithLevel} et \emph{State}) ainsi que sa position initiale sur la
+carte (cette position sera aussi la position de sa base de recharge)~:
 
 \begin{minted}{python}
 ###############################################################################
@@ -73,7 +88,11 @@ log=4
 speed=1
 \end{minted}
 
-Le paramètre log change le niveau d'affichage d'informations dans la console. Le paramètre speed modifie la vitesse d'éxécution, qui est aussi modifiable en cours d'éxécution avec les touches \emph{p} et \emph{m}.
+Le paramètre log change le niveau d'affichage d'informations dans la console. Le
+paramètre speed modifie la vitesse d'éxécution, qui est aussi modifiable en
+cours d'éxécution avec les touches \emph{p} et \emph{m}. Deux exemples de tels
+fichiers sont présents et nommés mph{vacuum} et mph{vacuum2}.
+
 
 Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
 \begin{verbatim}
@@ -90,16 +109,28 @@ Une fois ces deux fichiers créés, il suffit d'exécuter le programme~:
 
 \section{Structure du programme}
 \subsection{Structure générale}
-Comme demandé dans le sujet, notre programme s'exécute sur deux threads. Le premier thread réalise toute la gestion de la carte en créant de la poussière et des bijoux. Le second thread correspond à l'agent en observant l'environnement visible, puis donne le résultat à une stratégie qui en déduit la prochaine action et l'agent l'exécute.
+Comme demandé dans le sujet, notre programme s'exécute sur deux threads
+principaux. Le premier thread réalise toute la gestion de la carte en créant de
+la poussière et des bijoux. Le second thread correspond à l'agent en observant
+l'environnement visible, puis donne le résultat à une stratégie qui en déduit la
+prochaine action et l'agent l'exécute. Un troisième thread est présent et gère
+l'affichage des graphique des données.
 
-Les fichiers intéressants pour la création et le lancement des threads sont \emph{main.cpp}, \emph{Loader.*} et \emph{Startable.*}.
+Les fichiers intéressants pour la création et le lancement des threads sont
+\emph{main.cpp}, \emph{Loader.*} et \emph{Startable.*}.
 \subsection{L'environnement}
-La partie environnement est implémentée dans les fichier \emph{Map.*}. La carte est représentée par un vecteur de vecteur de Case (\emph{Case.h}) et est mise à jour dans la fonction \begin{minted}{cpp}
-void Map::update(double delta);
+La partie environnement est implémentée dans les fichier \emph{Map.*}. La carte
+est représentée par un vecteur de vecteur de cases (\emph{Case.h}) et est mise à
+jour dans la fonction \begin{minted}{cpp}
+  void Map::update(double delta);
 \end{minted}
-qui consiste en une boucle ou un évènement (soit un ajout de bijoux avec une probabilité de 0.2, soit un ajout de poussière avec une probabilité de 0.8) sur une case tirée au hasard. Deux évènements sont espacés d'un temps aléatoire (entre 10 et 1000 ms).
+qui consiste en une boucle où un évènement à réalisé est choisi (soit un ajout
+de bijoux avec une probabilité de 0.2, soit un ajout de poussière avec une
+probabilité de 0.8) sur une case tirée au hasard. Deux évènements sont espacés
+d'un temps aléatoire (entre 100 et 1000 millisecondes).
 \subsection{L'aspirateur}
-L'agent reprend le fonctionnement donné en pseudo-code dans le sujet du TP, c'est-à-dire~:
+L'agent reprend le fonctionnement donné en pseudo-code dans le sujet du TP,
+c'est-à-dire~:
 \begin{minted}{cpp}
 While (amIAlive()){
     ObserveEnvironmentWithAllMySensors();
@@ -108,21 +139,35 @@ While (amIAlive()){
     justDoIt();
 }
 \end{minted}
-En effet, tout comme \emph{Map}, on peut trouver la fonction~:
+Tout comme \emph{Map}, on peut trouver la fonction~:
 \begin{minted}{cpp}
 void Vacuum::update(double delta);
 \end{minted}
-qui observera l'environnement en mettant à jour une structure \emph{Sensors} si la batterie de l'agent n'est pas vide via la fonction~:
+puisque les deux classes héritent de \emph{Startable}. Cette fois la méthode 
+observera l'environnement en mettant à jour l'état observé via la méthode~:
 \begin{minted}{cpp}
 Sensors Vacuum::observe();
 \end{minted}
-L'objet \emph{Sensors} est décrit dans \emph{Sensors.h} et contient le niveau de poussière et le nombre de bijoux de la pièce, ainsi que la possibilité de se déplacer dans les pièces voisines. Cette captation est passée en paramètres à la stratégie qui s'occupera de mettre à jour l'état interne et de donner la prochaine action à exécuter (donc \emph{UpdateMyState()} et \emph{ChooseAnAction()} qui seront expliquées plus bas). Enfin, l'agent exécute l'Action retournée par la stratégie via la fonction ~:
+L'objet \emph{Sensors} est décrit dans \emph{Sensors.h} et contient le niveau de
+poussière et le nombre de bijoux de la case actuelle, ainsi que la possibilité
+de se déplacer dans les cases voisines. Cette captation est passée en paramètres
+à la stratégie pour l'empêcher de tricher en modifiant directement l'état de
+l'environnement. Elle s'occupera de mettre à jour l'état interne et dedonner la
+prochaine action à exécuter (donc \emph{UpdateMyState()} et
+\emph{ChooseAnAction()} qui seront expliquées plus bas). Enfin, l'agent exécute
+l'Action retournée par la stratégie via la fonction ~:
 \begin{minted}{cpp}
 void Vacuum::executeCurrentAction(double delta);
 \end{minted}
 \subsection{Les stratégies implémentées}
 
-Deux stratégies ont été implémentées pour ce TP. Une première (\emph{SuckWithLevelStrategy}) tente d'évaluer la meilleure action possible et ne possède pas d'algorithme de déplacement (et donc ne marche pas sur une carte avec des obstacles, comme peut le montrer un test sur le fichier \emph{map2}). Une seconde (\emph{StateStrategy}) fonctionne à l'aide d'une machine à état et d'un algorithme pour planifier ses trajectoires (pour fonctionner sur les cartes avec obstacles).
+Deux stratégies ont été implémentées pour ce TP. Une première
+(\emph{SuckWithLevelStrategy}) tente d'évaluer la meilleure action possible et
+ne possède pas d'algorithme de déplacement (et donc ne fonctionne pas bien sur
+une carte avec des obstacles complexes, comme peut le montrer un test sur le
+fichier \emph{map2}). Une seconde (\emph{StateStrategy}) fonctionne à l'aide
+d'une machine à état et d'un algorithme pour planifier ses trajectoires de
+façon à fonctionner même sur les cartes avec obstacles complexes.
 
 \subsubsection{SuckWithLevelStrategy}
 
@@ -153,13 +198,34 @@ Tout comme la précédente stratégie, \emph{StateStrategy} possède une fonctio
 \begin{minted}{cpp}
 void updateInternalMap(const Sensors& sensors);
 \end{minted}
-La principale différence vient du choix d'action qui est donné par une machine à état (visible dans \emph{StateStrategyStates.*}). Tout comme la première stratégie on peut voir 4 intentions différentes. La seconde différence vient de la planification de la trajectoire. En effet, la première stratégie n'a pas d'algorithme de déplacement, mais se contente de se rapprocher de sa case objectif. Si un obstacle est présent, le robot risque de rester dans le même coin. Ici, la planification de la trajectoire est implémentée à l'aide d'un \emph{A*} dans la fonction~:
+La principale différence vient du choix d'action qui est donné par une machine à
+état (visible dans \emph{StateStrategyStates.*}). Tout comme la première
+stratégie on peut voir 4 intentions différentes représentées par les 4 états
+implémentés. Lorsque la stratégie doit calculer l'action à réaliser, elle
+demande à son état courant. Si son état retourne une action valide (autre que
+None) alors c'est l'action à effectuer. Sinon (l'action retournée est None)
+alors c'est que la stratégie a changé d'état et il faut demander au nouvel état
+l'action à réaliser.
+La seconde différence vient de la planification de la trajectoire. En effet, la
+première stratégie n'a pas d'algorithme de déplacement, mais se contente de se
+rapprocher de sa case objectif. Si un obstacle est présent, le robot risque de
+rester dans le même coin. Ici, la planification de la trajectoire est
+implémentée à l'aide d'un algorithme \emph{A*} dans les méthodess~:
 \begin{minted}{cpp}
-	std::vector<ActionType> StateStrategy::pathTo(const Pos& target);
+  std::vector<ActionType> StateStrategy::pathTo(const Pos& target);
+  std::vector<ActionType> StateStrategy::constructpath(...);
 \end{minted}
+
+En outre cette stratégie aspire les cases pas à pas (restant au maximum 0.2s par
+aspiration) pour vérifier de manière régulière si un bijoux ne serait pas tombé
+sur la case actuelle depuis la dernière observation de l'environnement.
 
 
 \section{Conclusion}
-Au final, ce projet nous a permis d'implémenter plusieurs fonctionnements décrits en cours. Tout d'abord le concept d'agent ou nous avons dû réfléchir à quel type d'agent notre aspirateur correspondait. Ensuite, le principe d'état mental BDI. Enfin, comment implémenter la prise de décision à l'aide d'un scoring des différentes actions.
+Au final, ce projet nous a permis d'implémenter plusieurs fonctionnements
+décrits en cours. Tout d'abord le concept d'agent ou nous avons dû réfléchir à
+quel type d'agent notre aspirateur correspondait. Ensuite, le principe d'état
+mental BDI. Enfin, comment implémenter la prise de décision à l'aide d'un
+scoring des différentes actions, ou d'une machine à états finie.
 
 \end{document}
