@@ -99,9 +99,7 @@ Action SuckDirtState::execute(StateStrategy* str) {
     double timer = std::min(str->smartBatteryLevel() / SUCK_BATTERY_COST,
             str->dirtLevel()) * SUCK_TIME_COST;
     // Plafonner le temps pour éviter d'aspirer un légo (ou un bijoux)
-    std::cout << "[[[" << timer << " ";
     timer = std::min(MAX_SUCKING_TIME, timer);
-    std::cout << timer << "]]]" << std::endl;
     str->updateLastTimeVisited();
     return Action(Suck, timer);
 }
