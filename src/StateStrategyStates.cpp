@@ -92,6 +92,7 @@ Action SuckDirtState::execute(StateStrategy* str) {
         return Action();
     }
     if(str->dirtLevel() < MIN_DIRT_LEVEL_TO_SUCK) {
+        std::cout << str->dirtLevel() << std::endl;
         str->updateLastTimeVisited();
         str->setState(GoToLatestVisitedCaseState::getInstance());
         return Action();
@@ -99,7 +100,9 @@ Action SuckDirtState::execute(StateStrategy* str) {
     double timer = std::min(str->smartBatteryLevel() / SUCK_BATTERY_COST,
             str->dirtLevel()) * SUCK_TIME_COST;
     // Plafonner le temps pour éviter d'aspirer un légo (ou un bijoux)
-    timer = std::min(MAX_SUCKING_TIME, timer);
+    if(timer < 2 * MAX_SUCKING_TIME) {
+        timer = std::min(MAX_SUCKING_TIME, timer);
+    }
     str->updateLastTimeVisited();
     return Action(Suck, timer);
 }
