@@ -4,7 +4,7 @@
 
 # Strategy for the agent
 # {SuckWithLevel|State}
-strategy=SuckWithLevel
+strategy=State
 
 # Fist position of the agent, also the positio of its charging base
 base=0;0
@@ -12,7 +12,7 @@ base=0;0
 # Logging level
 # {0 = nothing, 1 = Choosed Action + Status, 2 = 1 + States process,
 # 3 = 2 + internal map, 4 = debug}
-log=3
+log=2
 
 # Speed of the simulation
 speed=10
